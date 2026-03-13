@@ -1,0 +1,74 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "AnyCarousel",
+  "projectDescription": "A highly customizable, smooth, and responsive React carousel library with custom easing and advanced animations.",
+  "theme": "palm",
+  "primaryColor": "#6366f1",
+  "lightColor": "#818cf8",
+  "darkColor": "#4f46e5",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "introduction",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Core Concepts",
+        "pages": [
+          "concepts/scroll-snapping",
+          "concepts/auto-scroll",
+          "concepts/easing-curves",
+          "concepts/theming"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/custom-icons",
+          "guides/responsive-layouts",
+          "guides/touch-gestures",
+          "guides/accessibility"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "pages": [
+          "api/carousel",
+          "api/carousel-props",
+          "api/types"
+        ]
+      },
+      {
+        "group": "Examples",
+        "pages": [
+          "examples/basic-carousel",
+          "examples/image-gallery",
+          "examples/auto-scroll",
+          "examples/custom-styling",
+          "examples/advanced"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Lightweight and minimalistic with zero bloat",
+    "Mobile and tablet friendly with swipe gestures",
+    "Custom easing using cubic-bezier curves",
+    "Auto-scroll with customizable intervals",
+    "Configurable scroll snapping (start, center, end, none)",
+    "Custom navigation icons and theming",
+    "Desktop support with Shift+Scroll and touchpad gestures",
+    "Works with any React component, images, or videos"
+  ],
+  "publicApiSurface": [
+    "Carousel - Main carousel component",
+    "CarouselProps - TypeScript props interface",
+    "ScrollSnapOptions - Type for scroll snap alignment",
+    "Theme - Type for light/dark theme",
+    "IconOptions - Type for custom navigation icons"
+  ]
+}

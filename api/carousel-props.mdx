@@ -1,0 +1,161 @@
+---
+title: Carousel Props
+description: Complete reference for all Carousel component props
+---
+
+## CarouselProps
+
+The `CarouselProps` interface defines all available props for the `Carousel` component.
+
+### Required Props
+
+<ParamField path="children" type="ReactNode" required>
+  Any iterable `ReactNode` element that the Carousel will display.
+
+  The children can be any valid React elements - divs, images, custom components, etc.
+
+  ```tsx
+  <Carousel>
+    <div>Item 1</div>
+    <div>Item 2</div>
+    <div>Item 3</div>
+  </Carousel>
+  ```
+</ParamField>
+
+### Optional Props
+
+<ParamField path="theme" type="Theme" default="light">
+  Specifies the theme of the carousel. This includes icon colors.
+
+  Accepts either `"light"` or `"dark"`.
+
+  ```tsx
+  <Carousel theme="dark">
+    {/* children */}
+  </Carousel>
+  ```
+</ParamField>
+
+<ParamField path="iconOptions" type="IconOptions">
+  Options used for customising the navigation icons used in Carousel.
+
+  <Expandable title="IconOptions properties">
+    - `icon`: A `ReactNode` that is going to be used as the icon element
+    - `iconStyles`: A style object that will be passed as styles to the Icon Node
+  </Expandable>
+
+  **Default value:**
+  ```tsx
+  {
+    icon: <span>&#8249;</span>,
+    iconStyles: { color: "whitesmoke", backgroundColor: "#333" }
+  }
+  ```
+
+  **Example:**
+  ```tsx
+  <Carousel
+    iconOptions={{
+      icon: <span>→</span>,
+      iconStyles: { color: 'blue', fontSize: '24px' }
+    }}
+  >
+    {/* children */}
+  </Carousel>
+  ```
+</ParamField>
+
+<ParamField path="scrollSnapType" type="ScrollSnapOptions" default="start">
+  Determines the snapping type for the carousel.
+
+  Accepted values are `"start"` | `"center"` | `"end"` | `"none"`
+
+  Learn more about snapping here: [MDN scroll-snap-type](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type)
+
+  ```tsx
+  <Carousel scrollSnapType="center">
+    {/* children */}
+  </Carousel>
+  ```
+</ParamField>
+
+<ParamField path="scrollOffset" type="number" default={1000}>
+  An offset of how much the Carousel will scroll its children.
+
+  - To scroll each child one at a time, set this to a value closer to the child's width
+  - To scroll the entire container, set this value to the container's width
+
+  If `scrollSnapType` is enabled and `scrollOffset` is less than the child's width, the carousel will still show the next child according to the `scrollSnapType` value.
+
+  ```tsx
+  <Carousel scrollOffset={500}>
+    {/* children */}
+  </Carousel>
+  ```
+</ParamField>
+
+<ParamField path="autoSlideInterval" type="number">
+  If set, then the carousel will scroll after a fixed duration defined by this variable.
+
+  The duration is taken in milliseconds.
+
+  The carousel automatically stops auto-scrolling when users interact with navigation buttons.
+
+  ```tsx
+  // Auto-scroll every 3 seconds
+  <Carousel autoSlideInterval={3000}>
+    {/* children */}
+  </Carousel>
+  ```
+</ParamField>
+
+<ParamField path="scrollEasing" type="string" default="cubic-bezier(0.42, 0, 0.58, 1)">
+  Easing function used for scrolling the carousel.
+
+  The value must be a valid CSS cubic-bezier function string.
+
+  **Example:**
+  ```tsx
+  <Carousel scrollEasing="cubic-bezier(0.25, 1, 0.5, 1)">
+    {/* children */}
+  </Carousel>
+  ```
+
+  If an invalid cubic-bezier value is provided, the carousel falls back to `cubic-bezier(0.25, 0.8, 0.5, 1)`.
+</ParamField>
+
+<ParamField path="duration" type="number" default={600}>
+  Defines how much time each transition between children will take in milliseconds.
+
+  The value is automatically clamped between 100ms (minimum) and 5000ms (maximum).
+
+  ```tsx
+  // Slower transitions
+  <Carousel duration={1000}>
+    {/* children */}
+  </Carousel>
+  ```
+</ParamField>
+
+## TypeScript Definition
+
+```typescript
+import { ReactNode } from "react";
+
+export type CarouselProps = {
+  children: ReactNode;
+  theme?: Theme;
+  iconOptions?: IconOptions;
+  scrollSnapType?: ScrollSnapOptions;
+  scrollOffset?: number;
+  autoSlideInterval?: number;
+  scrollEasing?: string;
+  duration?: number;
+};
+```
+
+## See Also
+
+- [Carousel Component](/api/carousel) - Main component documentation
+- [Types](/api/types) - Type definitions reference

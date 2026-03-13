@@ -1,0 +1,618 @@
+---
+title: 'Custom Styling'
+description: 'Customize the appearance of your carousel with custom icons and styles'
+icon: 'paintbrush'
+---
+
+## Custom Navigation Icons
+
+Replace the default arrow icons with custom ones using the `iconOptions` prop:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function CustomIconCarousel() {
+  return (
+    <Carousel 
+      iconOptions={{
+        icon: <span>→</span>,
+        iconStyles: {
+          color: 'white',
+          backgroundColor: '#3b82f6',
+          fontSize: '1.5rem',
+        },
+      }}
+    >
+      <div className="slide">Slide 1</div>
+      <div className="slide">Slide 2</div>
+      <div className="slide">Slide 3</div>
+    </Carousel>
+  );
+}
+```
+
+```css
+.slide {
+  min-width: 500px;
+  height: 300px;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 1.5rem;
+  border-radius: 12px;
+}
+```
+
+<Note>
+  The left arrow is automatically flipped using CSS transforms, so you only need to provide one icon.
+</Note>
+
+## SVG Icon Implementation
+
+Use custom SVG icons for more control:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function SVGIconCarousel() {
+  const customIcon = (
+    <svg 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  );
+
+  return (
+    <Carousel 
+      iconOptions={{
+        icon: customIcon,
+        iconStyles: {
+          color: '#1f2937',
+          backgroundColor: 'white',
+          padding: '0.75rem',
+          borderRadius: '50%',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        },
+      }}
+      scrollSnapType="center"
+    >
+      <div className="card">Card 1</div>
+      <div className="card">Card 2</div>
+      <div className="card">Card 3</div>
+      <div className="card">Card 4</div>
+    </Carousel>
+  );
+}
+```
+
+```css
+.card {
+  min-width: 300px;
+  height: 400px;
+  margin: 0 10px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: #333;
+}
+```
+
+## Using Icon Libraries
+
+Integrate popular icon libraries like React Icons:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+import { FiChevronRight } from 'react-icons/fi';
+
+function IconLibraryCarousel() {
+  return (
+    <Carousel 
+      iconOptions={{
+        icon: <FiChevronRight />,
+        iconStyles: {
+          color: 'white',
+          backgroundColor: '#10b981',
+          padding: '0.5rem',
+          borderRadius: '8px',
+          fontSize: '1.5rem',
+        },
+      }}
+    >
+      <div className="feature">Feature 1</div>
+      <div className="feature">Feature 2</div>
+      <div className="feature">Feature 3</div>
+    </Carousel>
+  );
+}
+```
+
+```bash
+npm install react-icons
+```
+
+## Styled Navigation Buttons
+
+Create elaborate button styles with gradients and effects:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function StyledButtonCarousel() {
+  const chevronIcon = (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M7.5 15l5-5-5-5" stroke="currentColor" strokeWidth="2" fill="none" />
+    </svg>
+  );
+
+  return (
+    <Carousel 
+      iconOptions={{
+        icon: chevronIcon,
+        iconStyles: {
+          color: 'white',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          padding: '1rem',
+          borderRadius: '12px',
+          border: '2px solid rgba(255, 255, 255, 0.3)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
+        },
+      }}
+      scrollOffset={420}
+      duration={500}
+    >
+      <div className="product">Product 1</div>
+      <div className="product">Product 2</div>
+      <div className="product">Product 3</div>
+    </Carousel>
+  );
+}
+```
+
+```css
+.product {
+  min-width: 400px;
+  height: 300px;
+  margin: 0 10px;
+  background: white;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+```
+
+## Minimal Icon Style
+
+Create clean, minimal navigation buttons:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function MinimalCarousel() {
+  return (
+    <Carousel 
+      iconOptions={{
+        icon: <span style={{ fontWeight: 'bold' }}>›</span>,
+        iconStyles: {
+          color: '#374151',
+          backgroundColor: 'transparent',
+          border: '2px solid #d1d5db',
+          padding: '0.5rem 0.75rem',
+          borderRadius: '6px',
+          fontSize: '1.75rem',
+          transition: 'all 0.2s ease',
+        },
+      }}
+      theme="light"
+    >
+      <div className="minimal-slide">Slide 1</div>
+      <div className="minimal-slide">Slide 2</div>
+      <div className="minimal-slide">Slide 3</div>
+    </Carousel>
+  );
+}
+```
+
+```css
+.minimal-slide {
+  min-width: 600px;
+  height: 250px;
+  margin-right: 1rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: #374151;
+}
+```
+
+<Tip>
+  You can use any React component as an icon, including custom components with animations.
+</Tip>
+
+## Themed Carousels
+
+Create different carousel themes for various contexts:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+// Dark theme carousel
+function DarkThemedCarousel() {
+  return (
+    <div className="dark-theme-wrapper">
+      <Carousel 
+        theme="dark"
+        iconOptions={{
+          icon: <span>▶</span>,
+          iconStyles: {
+            color: 'white',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            padding: '0.75rem 1rem',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+          },
+        }}
+        scrollSnapType="center"
+      >
+        <div className="dark-slide">Dark Slide 1</div>
+        <div className="dark-slide">Dark Slide 2</div>
+        <div className="dark-slide">Dark Slide 3</div>
+      </Carousel>
+    </div>
+  );
+}
+
+// Light theme carousel
+function LightThemedCarousel() {
+  return (
+    <div className="light-theme-wrapper">
+      <Carousel 
+        theme="light"
+        iconOptions={{
+          icon: <span>▶</span>,
+          iconStyles: {
+            color: '#1f2937',
+            backgroundColor: 'white',
+            padding: '0.75rem 1rem',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          },
+        }}
+        scrollSnapType="center"
+      >
+        <div className="light-slide">Light Slide 1</div>
+        <div className="light-slide">Light Slide 2</div>
+        <div className="light-slide">Light Slide 3</div>
+      </Carousel>
+    </div>
+  );
+}
+```
+
+```css
+.dark-theme-wrapper {
+  background: #1f2937;
+  padding: 3rem 0;
+}
+
+.dark-slide {
+  min-width: 400px;
+  height: 300px;
+  margin: 0 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.light-theme-wrapper {
+  background: #f9fafb;
+  padding: 3rem 0;
+}
+
+.light-slide {
+  min-width: 400px;
+  height: 300px;
+  margin: 0 10px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1f2937;
+  font-size: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+```
+
+## Animated Icons
+
+Add animation to navigation icons:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function AnimatedIconCarousel() {
+  const animatedIcon = (
+    <span className="animated-arrow">→</span>
+  );
+
+  return (
+    <>
+      <style>{`
+        .animated-arrow {
+          display: inline-block;
+          transition: transform 0.2s ease;
+        }
+        
+        .nav-button:hover .animated-arrow {
+          transform: translateX(4px);
+        }
+      `}</style>
+      
+      <Carousel 
+        iconOptions={{
+          icon: animatedIcon,
+          iconStyles: {
+            color: 'white',
+            backgroundColor: '#6366f1',
+            padding: '0.75rem 1.25rem',
+            borderRadius: '8px',
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+          },
+        }}
+      >
+        <div className="animated-slide">Slide 1</div>
+        <div className="animated-slide">Slide 2</div>
+        <div className="animated-slide">Slide 3</div>
+      </Carousel>
+    </>
+  );
+}
+```
+
+```css
+.animated-slide {
+  min-width: 500px;
+  height: 300px;
+  margin-right: 1rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+```
+
+## Icon Style Properties
+
+The `iconStyles` object accepts any valid CSS properties:
+
+```jsx
+iconOptions={{
+  icon: <YourIcon />,
+  iconStyles: {
+    // Colors
+    color: 'white',
+    backgroundColor: '#3b82f6',
+    
+    // Sizing
+    padding: '1rem',
+    fontSize: '1.5rem',
+    width: '48px',
+    height: '48px',
+    
+    // Borders
+    border: '2px solid white',
+    borderRadius: '50%', // Circular buttons
+    
+    // Effects
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+    backdropFilter: 'blur(10px)',
+    
+    // Transitions
+    transition: 'all 0.3s ease',
+    
+    // Positioning (use with caution)
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+  },
+}}
+```
+
+<Warning>
+  Avoid overriding positioning properties unless necessary, as it may break the carousel's layout.
+</Warning>
+
+## Complete Styled Example
+
+A fully styled carousel with custom icons and themed items:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function CompleteStyledCarousel() {
+  const items = [
+    { id: 1, title: 'Modern Design', color: '#3b82f6' },
+    { id: 2, title: 'Fast Performance', color: '#8b5cf6' },
+    { id: 3, title: 'Easy to Use', color: '#ec4899' },
+    { id: 4, title: 'Fully Responsive', color: '#10b981' },
+  ];
+
+  const customIcon = (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+
+  return (
+    <div className="styled-carousel-section">
+      <h2>Explore Our Features</h2>
+      <Carousel 
+        iconOptions={{
+          icon: customIcon,
+          iconStyles: {
+            color: 'white',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            padding: '1rem',
+            borderRadius: '50%',
+            border: '2px solid rgba(255, 255, 255, 0.3)',
+            backdropFilter: 'blur(10px)',
+            transition: 'all 0.2s ease',
+          },
+        }}
+        scrollSnapType="center"
+        scrollOffset={370}
+        duration={600}
+      >
+        {items.map((item) => (
+          <div 
+            key={item.id} 
+            className="feature-card"
+            style={{ background: item.color }}
+          >
+            <h3>{item.title}</h3>
+            <p>Experience the difference with our cutting-edge solution.</p>
+            <button className="learn-more">Learn More</button>
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+```
+
+```css
+.styled-carousel-section {
+  padding: 4rem 2rem;
+  background: linear-gradient(to bottom, #f9fafb, #ffffff);
+}
+
+.styled-carousel-section h2 {
+  text-align: center;
+  margin: 0 0 3rem 0;
+  font-size: 2.5rem;
+  color: #111;
+}
+
+.feature-card {
+  min-width: 350px;
+  height: 400px;
+  margin: 0 10px;
+  padding: 3rem 2rem;
+  border-radius: 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+}
+
+.feature-card h3 {
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+}
+
+.feature-card p {
+  margin: 0 0 2rem 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.learn-more {
+  padding: 0.75rem 2rem;
+  background: white;
+  color: #111;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.learn-more:hover {
+  transform: scale(1.05);
+}
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Icon Design Guidelines">
+    - Keep icons simple and recognizable
+    - Ensure sufficient size for touch targets (minimum 44x44px)
+    - Use consistent styling across all navigation elements
+    - Test icon visibility against carousel background
+  </Accordion>
+
+  <Accordion title="Color and Contrast">
+    - Maintain at least 4.5:1 contrast ratio for accessibility
+    - Use semi-transparent backgrounds for icons over images
+    - Consider both light and dark theme variants
+    - Test icon visibility in all contexts
+  </Accordion>
+
+  <Accordion title="Performance">
+    - Use SVG icons instead of icon fonts when possible
+    - Avoid complex gradients or filters on frequently updated elements
+    - Keep icon file sizes small (inline SVGs are ideal)
+    - Use CSS transforms for hover effects (GPU accelerated)
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  When using custom icons, provide only the right-pointing icon. The carousel automatically mirrors it for the left button.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Advanced Examples" icon="rocket" href="/examples/advanced">
+    Combine styling with auto-scroll and custom easing
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/carousel">
+    Explore all available props and options
+  </Card>
+</CardGroup>

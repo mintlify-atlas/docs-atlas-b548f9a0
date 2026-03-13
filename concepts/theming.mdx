@@ -1,0 +1,394 @@
+---
+title: 'Theming'
+description: 'Customize the appearance of navigation buttons with light and dark themes and custom styling'
+---
+
+## Overview
+
+Theming in AnyCarousel controls the visual appearance of navigation buttons, primarily affecting their background and text colors. The carousel supports both light and dark themes out of the box.
+
+## The Theme Type
+
+From `carousel-props.ts:12`, the Theme type is defined as:
+
+```typescript
+/**
+ * Accepts either "light" or "dark"
+ * Default value is "light"
+ */
+export type Theme = "light" | "dark";
+```
+
+### Basic Usage
+
+<Tabs>
+  <Tab title="Light Theme (Default)">
+    ```tsx
+    <Carousel theme="light">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Light theme features:
+    - White background buttons
+    - Black text/icon color
+    - Subtle shadow for depth
+  </Tab>
+  
+  <Tab title="Dark Theme">
+    ```tsx
+    <Carousel theme="dark">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Dark theme features:
+    - Black background buttons
+    - White text/icon color
+    - Subtle shadow for depth
+  </Tab>
+</Tabs>
+
+## Implementation Details
+
+### Theme Application
+
+From `CircularButton.tsx:14-45`, the theme affects button styling:
+
+```tsx
+export const CircularButton = ({
+  onClick,
+  icon,
+  className = "",
+  theme = 'light',
+  style = {}
+}: CircularButtonProps) => {
+  return (
+    <button
+      data-testid={`nav-icon-btn`}
+      onClick={onClick}
+      className={`circular-button ${className}`}
+      style={{
+        borderRadius: "50%",
+        width: "45px",
+        height: "45px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        border: "none",
+        backgroundColor: theme == 'light' ? "white" : "black",
+        color: theme == 'dark' ? "white" : "black",
+        fontSize: "1.75rem",
+        cursor: "pointer",
+        ...style
+      }}
+    >
+      {icon}
+    </button>
+  );
+};
+```
+
+**Key styling logic:**
+- `backgroundColor`: `"white"` for light theme, `"black"` for dark theme
+- `color`: `"black"` for light theme, `"white"` for dark theme
+- Consistent 45px circular buttons
+- Box shadow for depth: `"0 2px 8px rgba(0,0,0,0.2)"`
+
+### Default Theme
+
+From `carousel.tsx:10`, the default theme is `"light"`:
+
+```tsx
+const defaultProps = {
+  theme: "light" as Theme,
+  iconOptions: {
+    icon: <span>&#8249;</span> as ReactNode,
+    iconStyles: { color: "whitesmoke", backgroundColor: "#333" },
+  } as IconOptions,
+  scrollSnapType: "start" as ScrollSnapOptions,
+  scrollOffset: DEFAULT_SCROLL_OFFSET,
+  scrollEasing: DEFAULT_EASING,
+  duration: DEFAULT_DURATION
+};
+```
+
+<Info>
+If you don't specify a theme, the carousel defaults to light mode with white buttons and dark icons.
+</Info>
+
+## Custom Icon Styling
+
+The `iconOptions` prop provides fine-grained control over icon appearance:
+
+### IconOptions Type
+
+From `carousel-props.ts:19-22`:
+
+```typescript
+/**
+ * Options used for customising navigation icons used in carousel
+ * `icon`: A `ReactNode` that is going to be used as the icon element.
+ * `iconStyles`: A style object that will be passed as styles to the Icon Node
+ */
+export type IconOptions = {
+  icon?: ReactNode;
+  iconStyles?: any;
+};
+```
+
+### Custom Icon Examples
+
+<Tabs>
+  <Tab title="Custom Icon with Dark Theme">
+    ```tsx
+    <Carousel
+      theme="dark"
+      iconOptions={{
+        icon: <span>→</span>,
+        iconStyles: {
+          color: "#00ff00",
+          fontSize: "2rem"
+        }
+      }}
+    >
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Creates dark buttons with green arrow icons.
+  </Tab>
+  
+  <Tab title="Image Icons">
+    ```tsx
+    <Carousel
+      theme="light"
+      iconOptions={{
+        icon: <img src="/arrow.svg" alt="Next" width={24} height={24} />,
+        iconStyles: {
+          padding: "8px"
+        }
+      }}
+    >
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Uses custom SVG icons with light theme buttons.
+  </Tab>
+  
+  <Tab title="Icon Component">
+    ```tsx
+    import { ChevronRight } from 'lucide-react';
+
+    <Carousel
+      theme="dark"
+      iconOptions={{
+        icon: <ChevronRight size={24} />,
+        iconStyles: {
+          color: "#60a5fa"
+        }
+      }}
+    >
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Integrates icon libraries with custom colors.
+  </Tab>
+  
+  <Tab title="Emoji Icons">
+    ```tsx
+    <Carousel
+      theme="light"
+      iconOptions={{
+        icon: <span>👉</span>,
+        iconStyles: {
+          fontSize: "1.5rem"
+        }
+      }}
+    >
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Playful emoji-based navigation.
+  </Tab>
+</Tabs>
+
+<Note>
+The `iconStyles` override theme colors. If you specify a color in `iconStyles`, it will take precedence over the theme's default color.
+</Note>
+
+## Overriding Theme Colors
+
+You can mix themes with custom icon styles:
+
+```tsx
+<Carousel
+  theme="dark" // Black buttons
+  iconOptions={{
+    icon: <span>‹</span>,
+    iconStyles: {
+      color: "#fbbf24", // Override with gold color
+      backgroundColor: "transparent"
+    }
+  }}
+>
+  {/* Your items */}
+</Carousel>
+```
+
+This creates dark buttons with gold icons.
+
+## Complete Theming Example
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+export default function ThemedCarousel() {
+  return (
+    <div style={{ backgroundColor: '#1f2937', padding: '2rem' }}>
+      <Carousel
+        theme="dark"
+        iconOptions={{
+          icon: <ChevronRight size={20} />,
+          iconStyles: {
+            color: "#60a5fa",
+            backgroundColor: "rgba(30, 58, 138, 0.5)",
+            backdropFilter: "blur(8px)"
+          }
+        }}
+        scrollSnapType="center"
+        duration={700}
+      >
+        <div className="slide">Slide 1</div>
+        <div className="slide">Slide 2</div>
+        <div className="slide">Slide 3</div>
+      </Carousel>
+    </div>
+  );
+}
+```
+
+This creates a dark-themed carousel with:
+- Dark button backgrounds
+- Blue custom icons
+- Semi-transparent button backgrounds with blur effect
+- Centered scroll snapping
+- 700ms transition duration
+
+## Responsive Theming
+
+You can dynamically change themes based on user preferences:
+
+```tsx
+import { useState, useEffect } from 'react';
+import { Carousel } from 'react-any-carousal';
+
+export default function ResponsiveCarousel() {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  useEffect(() => {
+    // Detect user's system preference
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(isDark ? 'dark' : 'light');
+  }, []);
+
+  return (
+    <Carousel theme={theme}>
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+  );
+}
+```
+
+## Button Positioning
+
+From `carousel.tsx:143-170`, buttons are positioned using CSS classes:
+
+```tsx
+<div role="region" aria-label="Carousel" className="carousel-wrapper">
+  {showLeft && (
+    <CircularButton
+      className="nav-button left"
+      onClick={() => triggerScroll(-1)}
+      icon={iconOptions.icon}
+      style={iconOptions.iconStyles}
+      theme={theme}
+      aria-label="Previous item"
+    />
+  )}
+  <div className="carousel-container" ref={containerRef} onScroll={handleScroll}>
+    {children}
+  </div>
+  {showRight && (
+    <CircularButton
+      className="nav-button right"
+      onClick={() => triggerScroll(1)}
+      icon={iconOptions.icon}
+      style={iconOptions.iconStyles}
+      theme={theme}
+      aria-label="Next item"
+    />
+  )}
+</div>
+```
+
+Buttons use `nav-button left` and `nav-button right` classes for positioning via CSS.
+
+## Best Practices
+
+<Tip>
+**Match your app's design system:**
+- Use light theme for light backgrounds
+- Use dark theme for dark backgrounds
+- Customize `iconStyles` to match your brand colors
+</Tip>
+
+### Accessibility
+
+<Note>
+Ensure sufficient color contrast between button backgrounds and icons:
+- Light theme (white background, black icons): 21:1 contrast ratio
+- Dark theme (black background, white icons): 21:1 contrast ratio
+- Custom colors: Maintain at least 4.5:1 contrast ratio for WCAG AA compliance
+</Note>
+
+### Theme Consistency
+
+Maintain visual consistency across your application:
+
+```tsx
+// Create a themed carousel component
+import { Carousel } from 'react-any-carousal';
+import { useTheme } from '@/hooks/useTheme';
+
+export function ThemedCarousel({ children, ...props }) {
+  const { theme } = useTheme(); // Get app-wide theme
+  
+  return (
+    <Carousel theme={theme} {...props}>
+      {children}
+    </Carousel>
+  );
+}
+```
+
+This ensures your carousel always matches your application's current theme.

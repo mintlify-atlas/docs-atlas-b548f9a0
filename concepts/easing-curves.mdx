@@ -1,0 +1,305 @@
+---
+title: 'Easing Curves'
+description: 'Customize scroll animations with cubic-bezier easing functions for smooth, professional transitions'
+---
+
+## Overview
+
+Easing curves control the acceleration and deceleration of scroll animations, making transitions feel natural and polished. AnyCarousel uses cubic-bezier functions powered by the `bezier-easing` library.
+
+## The scrollEasing Prop
+
+The `scrollEasing` prop accepts a CSS cubic-bezier string:
+
+```tsx
+<Carousel scrollEasing="cubic-bezier(0.25, 0.8, 0.5, 1)">
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Carousel>
+```
+
+### Cubic-Bezier Format
+
+A cubic-bezier curve is defined by four control points:
+
+```
+cubic-bezier(x1, y1, x2, y2)
+```
+
+- `x1, y1`: First control point (must be between 0 and 1)
+- `x2, y2`: Second control point (must be between 0 and 1)
+
+<Info>
+The curve always starts at (0, 0) and ends at (1, 1), representing the beginning and end of the animation.
+</Info>
+
+## Implementation Details
+
+### Parsing and Validation
+
+From `carousel.tsx:45-59`, the carousel parses the cubic-bezier string:
+
+```tsx
+const customScrollEasingFn = useMemo(() => {
+  const fallbackEasing = [0.25, 0.8, 0.5, 1];
+  const parsedEasing = scrollEasing?.match(/cubic-bezier\(([^)]+)\)/)?.[1];
+  const easingValues = parsedEasing?.split(',').map(Number);
+  const [x1, y1, x2, y2] = easingValues?.length === 4 ? easingValues : fallbackEasing;
+
+  try {
+    // The bezier-easing library call
+    return bezierEasing(x1 ?? 0.25, y1 ?? 0.8, x2 ?? 0.5, y2 ?? 1);
+  } catch (error) {
+    console.error("Invalid cubic-bezier values provided. Falling back to default easing.", error);
+    return bezierEasing(0.25, 0.8, 0.5, 1);
+  }
+}, [scrollEasing]);
+```
+
+**Key features:**
+1. Uses regex to extract values from the cubic-bezier string
+2. Falls back to default easing `[0.25, 0.8, 0.5, 1]` if parsing fails
+3. Catches errors from invalid bezier values
+4. Memoized for performance - only recalculates when `scrollEasing` changes
+
+### The bezier-easing Library
+
+From `carousel.tsx:6`, the carousel imports the library:
+
+```tsx
+import bezierEasing from 'bezier-easing';
+```
+
+This library converts cubic-bezier parameters into an easing function that:
+- Takes a progress value (0 to 1)
+- Returns an eased value (0 to 1)
+
+### Animation Application
+
+From `carousel.tsx:93-112`, the easing function is applied during scroll animation:
+
+```tsx
+const animateScrollBy = useCallback((
+  container: HTMLDivElement,
+  offset: number,
+  duration: number,
+  easingFn: (t: number) => number
+) => {
+  const start = container.scrollLeft;
+  const startTime = performance.now();
+
+  const step = (currentTime: number) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = easingFn(progress);
+    container.scrollLeft = start + offset * eased;
+
+    if (progress < 1) requestAnimationFrame(step);
+  };
+
+  requestAnimationFrame(step);
+}, []);
+```
+
+**Animation flow:**
+1. Calculate linear `progress` (0 to 1) based on elapsed time
+2. Pass `progress` through `easingFn` to get `eased` value
+3. Apply `eased` value to scroll position
+4. Continue with `requestAnimationFrame` until complete
+
+## Common Easing Curves
+
+<Tabs>
+  <Tab title="Ease (Default)">
+    Smooth start and end with emphasis in the middle.
+    
+    ```tsx
+    <Carousel scrollEasing="cubic-bezier(0.42, 0, 0.58, 1)">
+      {/* Your items */}
+    </Carousel>
+    ```
+    
+    This is the default from `constants/carousel.ts:6`:
+    ```tsx
+    export const DEFAULT_EASING = "cubic-bezier(0.42, 0, 0.58, 1)";
+    ```
+  </Tab>
+  
+  <Tab title="Ease-In-Out">
+    Gentle acceleration and deceleration.
+    
+    ```tsx
+    <Carousel scrollEasing="cubic-bezier(0.25, 0.8, 0.5, 1)">
+      {/* Your items */}
+    </Carousel>
+    ```
+    
+    Perfect for smooth, professional transitions.
+  </Tab>
+  
+  <Tab title="Ease-In">
+    Slow start, fast end.
+    
+    ```tsx
+    <Carousel scrollEasing="cubic-bezier(0.42, 0, 1, 1)">
+      {/* Your items */}
+    </Carousel>
+    ```
+    
+    Creates anticipation before the movement.
+  </Tab>
+  
+  <Tab title="Ease-Out">
+    Fast start, slow end.
+    
+    ```tsx
+    <Carousel scrollEasing="cubic-bezier(0, 0, 0.58, 1)">
+      {/* Your items */}
+    </Carousel>
+    ```
+    
+    Feels responsive and natural.
+  </Tab>
+  
+  <Tab title="Linear">
+    Constant speed throughout.
+    
+    ```tsx
+    <Carousel scrollEasing="cubic-bezier(0, 0, 1, 1)">
+      {/* Your items */}
+    </Carousel>
+    ```
+    
+    Can feel robotic but useful for certain effects.
+  </Tab>
+  
+  <Tab title="Bounce">
+    Overshoots and bounces back.
+    
+    ```tsx
+    <Carousel scrollEasing="cubic-bezier(0.68, -0.55, 0.265, 1.55)">
+      {/* Your items */}
+    </Carousel>
+    ```
+    
+    Playful and attention-grabbing.
+  </Tab>
+</Tabs>
+
+<Tip>
+Use [cubic-bezier.com](https://cubic-bezier.com) to visually design and test your easing curves before implementing them.
+</Tip>
+
+## The duration Prop
+
+The `duration` prop controls how long each scroll animation takes (in milliseconds):
+
+```tsx
+<Carousel 
+  scrollEasing="cubic-bezier(0.25, 0.8, 0.5, 1)"
+  duration={800}
+>
+  {/* Your items */}
+</Carousel>
+```
+
+### Duration Constraints
+
+From `constants/carousel.ts:1-3`:
+
+```tsx
+export const DEFAULT_DURATION = 600; // in ms
+export const MIN_DURATION = 100;
+export const MAX_DURATION = 5000;
+```
+
+From `carousel.tsx:39-43`, duration is sanitized:
+
+```tsx
+const sanitizedDuration = useMemo(() => {
+  return typeof duration === "number"
+    ? Math.min(Math.max(duration, MIN_DURATION), MAX_DURATION)
+    : DEFAULT_DURATION;
+}, [duration]);
+```
+
+- **Minimum**: 100ms (prevents jarring instant scrolls)
+- **Maximum**: 5000ms (prevents excessively slow animations)
+- **Default**: 600ms
+
+<Note>
+If you provide a duration outside the 100-5000ms range, it will be clamped to the nearest valid value.
+</Note>
+
+## Combining Duration and Easing
+
+Duration and easing work together to create the final animation feel:
+
+```tsx
+// Fast, snappy scroll
+<Carousel 
+  scrollEasing="cubic-bezier(0.25, 0.8, 0.5, 1)"
+  duration={300}
+>
+
+// Slow, dramatic scroll
+<Carousel 
+  scrollEasing="cubic-bezier(0.25, 0.8, 0.5, 1)"
+  duration={1200}
+>
+
+// Bouncy, playful scroll
+<Carousel 
+  scrollEasing="cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+  duration={800}
+>
+```
+
+## Complete Example
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+
+export default function SmoothCarousel() {
+  return (
+    <Carousel
+      scrollEasing="cubic-bezier(0.25, 0.8, 0.5, 1)"
+      duration={800}
+      scrollOffset={600}
+      scrollSnapType="start"
+    >
+      <div className="card">Product 1</div>
+      <div className="card">Product 2</div>
+      <div className="card">Product 3</div>
+      <div className="card">Product 4</div>
+    </Carousel>
+  );
+}
+```
+
+This creates a carousel with:
+- Smooth ease-in-out animation
+- 800ms transition duration
+- 600px scroll distance per click
+- Items snapping to the start position
+
+## Best Practices
+
+<Tip>
+**Match easing to content type:**
+- **Text content**: Slower, gentle easing (800-1000ms, ease-in-out)
+- **Images**: Medium speed, smooth easing (600-800ms, ease)
+- **Interactive cards**: Snappy, responsive easing (300-500ms, ease-out)
+</Tip>
+
+### Testing Your Easing
+
+1. Start with the default easing and duration
+2. Adjust duration first to get the right speed
+3. Then fine-tune the easing curve for the right feel
+4. Test on different devices and browsers
+
+<Info>
+The easing function is memoized, so changing the `scrollEasing` prop will efficiently update the animation without performance overhead.
+</Info>

@@ -1,0 +1,474 @@
+---
+title: 'Auto-Scroll Carousel'
+description: 'Create carousels that automatically advance through items'
+icon: 'forward'
+---
+
+## Basic Auto-Scroll
+
+Enable automatic scrolling with the `autoSlideInterval` prop (in milliseconds):
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function AutoScrollCarousel() {
+  return (
+    <Carousel 
+      autoSlideInterval={3000} // Auto-scroll every 3 seconds
+    >
+      <div className="slide">Slide 1</div>
+      <div className="slide">Slide 2</div>
+      <div className="slide">Slide 3</div>
+      <div className="slide">Slide 4</div>
+    </Carousel>
+  );
+}
+```
+
+```css
+.slide {
+  min-width: 600px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-right: 1rem;
+  border-radius: 12px;
+}
+```
+
+<Note>
+  The carousel automatically loops back to the beginning when it reaches the end.
+</Note>
+
+## Configuring Auto-Scroll Behavior
+
+Control the scroll speed and duration with multiple props:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function ConfiguredAutoScroll() {
+  return (
+    <Carousel 
+      autoSlideInterval={4000}  // Wait 4 seconds between scrolls
+      duration={800}            // Take 800ms to complete each scroll
+      scrollOffset={620}        // Scroll 620px each time
+      scrollSnapType="center"   // Snap items to center
+    >
+      <div className="item">Item 1</div>
+      <div className="item">Item 2</div>
+      <div className="item">Item 3</div>
+      <div className="item">Item 4</div>
+      <div className="item">Item 5</div>
+    </Carousel>
+  );
+}
+```
+
+```css
+.item {
+  min-width: 600px;
+  height: 350px;
+  margin: 0 10px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #333;
+}
+```
+
+### Key Props Explained
+
+- **autoSlideInterval**: Time in milliseconds to wait before auto-scrolling to next item
+- **duration**: Time in milliseconds for the scroll animation (default: 600, min: 100, max: 5000)
+- **scrollOffset**: Distance in pixels to scroll (default: 1000)
+- **scrollSnapType**: How items align after scrolling (`"start"`, `"center"`, `"end"`, or `"none"`)
+
+## User Interaction Handling
+
+Auto-scrolling automatically stops when users interact with the carousel:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function InteractiveAutoScroll() {
+  return (
+    <div className="carousel-wrapper">
+      <h2>Automatic Slideshow</h2>
+      <p className="hint">Click the arrows to pause auto-scroll</p>
+      
+      <Carousel 
+        autoSlideInterval={3500}
+        duration={600}
+        scrollSnapType="center"
+        scrollOffset={420}
+      >
+        <div className="banner" style={{ background: '#3b82f6' }}>
+          <h3>New Feature Launch</h3>
+          <p>Discover what's new this month</p>
+        </div>
+        <div className="banner" style={{ background: '#8b5cf6' }}>
+          <h3>Summer Sale</h3>
+          <p>Up to 50% off selected items</p>
+        </div>
+        <div className="banner" style={{ background: '#ec4899' }}>
+          <h3>Free Shipping</h3>
+          <p>On orders over $50</p>
+        </div>
+      </Carousel>
+    </div>
+  );
+}
+```
+
+```css
+.carousel-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.carousel-wrapper h2 {
+  margin: 0 0 0.5rem 0;
+  color: #111;
+}
+
+.hint {
+  margin: 0 0 1.5rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.banner {
+  min-width: 400px;
+  height: 250px;
+  margin: 0 10px;
+  border-radius: 16px;
+  padding: 3rem;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.banner h3 {
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+}
+
+.banner p {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+```
+
+<Warning>
+  When a user clicks the navigation arrows, auto-scrolling is permanently disabled for that carousel instance. This prevents interrupting user control.
+</Warning>
+
+## Image Slideshow
+
+Create an automatic image slideshow for hero sections or galleries:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function ImageSlideshow() {
+  const slides = [
+    {
+      id: 1,
+      image: '/hero/slide-1.jpg',
+      title: 'Welcome to Our Store',
+      subtitle: 'Discover amazing products',
+    },
+    {
+      id: 2,
+      image: '/hero/slide-2.jpg',
+      title: 'Premium Quality',
+      subtitle: 'Handcrafted with care',
+    },
+    {
+      id: 3,
+      image: '/hero/slide-3.jpg',
+      title: 'Fast Delivery',
+      subtitle: 'Get it delivered in 48 hours',
+    },
+  ];
+
+  return (
+    <Carousel 
+      autoSlideInterval={5000}
+      duration={1000}
+      scrollSnapType="start"
+      theme="dark"
+    >
+      {slides.map((slide) => (
+        <div key={slide.id} className="hero-slide">
+          <img src={slide.image} alt={slide.title} />
+          <div className="hero-content">
+            <h1>{slide.title}</h1>
+            <p>{slide.subtitle}</p>
+            <button className="cta-button">Learn More</button>
+          </div>
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+.hero-slide {
+  min-width: 100%;
+  height: 500px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  z-index: 2;
+  width: 100%;
+  padding: 2rem;
+}
+
+.hero-slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.hero-content h1 {
+  margin: 0 0 1rem 0;
+  font-size: 3rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content p {
+  margin: 0 0 2rem 0;
+  font-size: 1.5rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.cta-button {
+  padding: 1rem 2.5rem;
+  background: white;
+  color: #111;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cta-button:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+}
+```
+
+## Testimonial Rotator
+
+Automatically cycle through customer testimonials:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function TestimonialRotator() {
+  const testimonials = [
+    {
+      id: 1,
+      text: 'This product changed my life! The quality is outstanding and the customer service is exceptional.',
+      author: 'Sarah Johnson',
+      role: 'Marketing Director',
+      avatar: '/avatars/sarah.jpg',
+    },
+    {
+      id: 2,
+      text: 'I\'ve been using this for 6 months and couldn\'t be happier. Highly recommended!',
+      author: 'Michael Chen',
+      role: 'Software Engineer',
+      avatar: '/avatars/michael.jpg',
+    },
+    {
+      id: 3,
+      text: 'The best investment I\'ve made this year. Five stars all around!',
+      author: 'Emma Williams',
+      role: 'Business Owner',
+      avatar: '/avatars/emma.jpg',
+    },
+  ];
+
+  return (
+    <div className="testimonial-section">
+      <h2>What Our Customers Say</h2>
+      <Carousel 
+        autoSlideInterval={6000}
+        duration={700}
+        scrollSnapType="center"
+        scrollOffset={550}
+      >
+        {testimonials.map((testimonial) => (
+          <div key={testimonial.id} className="testimonial-card">
+            <div className="quote-icon">"</div>
+            <p className="testimonial-text">{testimonial.text}</p>
+            <div className="author-info">
+              <img src={testimonial.avatar} alt={testimonial.author} />
+              <div>
+                <h4>{testimonial.author}</h4>
+                <p>{testimonial.role}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+```
+
+```css
+.testimonial-section {
+  padding: 4rem 2rem;
+  background: #f9fafb;
+}
+
+.testimonial-section h2 {
+  text-align: center;
+  margin: 0 0 3rem 0;
+  font-size: 2.5rem;
+  color: #111;
+}
+
+.testimonial-card {
+  min-width: 500px;
+  margin: 0 20px;
+  padding: 3rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.quote-icon {
+  font-size: 4rem;
+  color: #3b82f6;
+  line-height: 1;
+  margin-bottom: 1rem;
+  font-family: Georgia, serif;
+}
+
+.testimonial-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #333;
+  margin: 0 0 2rem 0;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.author-info img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-info h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #111;
+}
+
+.author-info p {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .testimonial-card {
+    min-width: calc(100vw - 40px);
+    padding: 2rem;
+  }
+}
+```
+
+## Performance Tips
+
+<AccordionGroup>
+  <Accordion title="Optimal Interval Timing">
+    - **3-5 seconds**: Good for text/announcement banners
+    - **5-7 seconds**: Ideal for testimonials and content with more text
+    - **4-6 seconds**: Best for image galleries
+    - Avoid intervals under 2 seconds - users need time to read content
+  </Accordion>
+
+  <Accordion title="Duration Settings">
+    - Keep `duration` between 500-1000ms for smooth transitions
+    - Faster durations (300-500ms) work for small scrolls
+    - Slower durations (800-1200ms) suit full-screen transitions
+    - Never exceed 2000ms - it feels sluggish
+  </Accordion>
+
+  <Accordion title="Memory Considerations">
+    - Lazy load images in carousel items
+    - Limit the number of items (use pagination for large sets)
+    - Unmount carousel when not visible to save resources
+    - Avoid heavy animations in carousel items during auto-scroll
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  The auto-scroll automatically pauses when users manually navigate, giving them full control.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Custom Styling" icon="paintbrush" href="/examples/custom-styling">
+    Customize the look and feel of your carousel
+  </Card>
+  <Card title="Advanced Examples" icon="rocket" href="/examples/advanced">
+    Combine auto-scroll with custom easing and icons
+  </Card>
+</CardGroup>

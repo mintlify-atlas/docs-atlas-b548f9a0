@@ -1,0 +1,180 @@
+---
+title: 'Scroll Snapping'
+description: 'Learn how scroll snapping works in AnyCarousel to create precise, aligned carousel experiences'
+---
+
+## Overview
+
+Scroll snapping ensures carousel items align precisely to defined positions after scrolling. AnyCarousel leverages the native CSS `scroll-snap-type` property to provide smooth, performant snapping behavior.
+
+## ScrollSnapOptions Type
+
+The `scrollSnapType` prop accepts four values:
+
+```typescript
+type ScrollSnapOptions = "start" | "center" | "end" | "none";
+```
+
+### Snap Positions
+
+<Tabs>
+  <Tab title="start">
+    Items snap to the **start** of the container. This is the default behavior.
+    
+    ```tsx
+    <Carousel scrollSnapType="start">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Perfect for left-aligned carousels where items should align to the left edge.
+  </Tab>
+  
+  <Tab title="center">
+    Items snap to the **center** of the container.
+    
+    ```tsx
+    <Carousel scrollSnapType="center">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Ideal for showcasing featured items or creating spotlight effects.
+  </Tab>
+  
+  <Tab title="end">
+    Items snap to the **end** of the container.
+    
+    ```tsx
+    <Carousel scrollSnapType="end">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Useful for right-aligned layouts or RTL (right-to-left) interfaces.
+  </Tab>
+  
+  <Tab title="none">
+    **No snapping** - free scrolling without alignment constraints.
+    
+    ```tsx
+    <Carousel scrollSnapType="none">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </Carousel>
+    ```
+    
+    Use when you want smooth, continuous scrolling without snap points.
+  </Tab>
+</Tabs>
+
+## Implementation Details
+
+The snapping behavior is applied via inline styles in the carousel container:
+
+```tsx
+// From carousel.tsx:157
+<div
+  className="carousel-container"
+  ref={containerRef}
+  onScroll={handleScroll}
+  style={{ scrollSnapType: `x ${scrollSnapType}` }}
+>
+  {children}
+</div>
+```
+
+This translates to CSS like:
+- `scroll-snap-type: x start` - horizontal scrolling with start alignment
+- `scroll-snap-type: x center` - horizontal scrolling with center alignment
+- `scroll-snap-type: x end` - horizontal scrolling with end alignment
+- `scroll-snap-type: x none` - horizontal scrolling without snapping
+
+<Info>
+The carousel uses the browser's native scroll snapping, ensuring optimal performance without JavaScript overhead during scrolling.
+</Info>
+
+## Interaction with scrollOffset
+
+The `scrollOffset` prop determines how far the carousel scrolls with each navigation button click. When combined with scroll snapping:
+
+```tsx
+<Carousel 
+  scrollSnapType="start"
+  scrollOffset={800}
+>
+  <div style={{ width: '400px' }}>Item 1</div>
+  <div style={{ width: '400px' }}>Item 2</div>
+  <div style={{ width: '400px' }}>Item 3</div>
+</Carousel>
+```
+
+<Note>
+If `scrollSnapType` is enabled and `scrollOffset` is less than a child's width, the carousel will still snap to show the next child according to the `scrollSnapType` value.
+</Note>
+
+### How it Works
+
+From `carousel.tsx:78-84`, when a user clicks a navigation button:
+
+```tsx
+const triggerScroll = (direction: number) => {
+  setAutoScrollEnabled(false); // Stop auto-scrolling on user interaction
+  if (!containerRef.current) return;
+
+  const easing = customScrollEasingFn;
+  animateScrollBy(containerRef.current, (scrollOffset * direction), sanitizedDuration, easing);
+};
+```
+
+1. The carousel scrolls by `scrollOffset` pixels (multiplied by direction: -1 or 1)
+2. During the animated scroll, native snap points guide the final position
+3. The carousel settles at the nearest snap point based on `scrollSnapType`
+
+## Best Practices
+
+<Tip>
+**Match scrollOffset to item width**: For single-item scrolling, set `scrollOffset` to match your item width. For multi-item scrolling, use a multiple of the item width.
+</Tip>
+
+### Example: Perfect Single-Item Snapping
+
+```tsx
+const itemWidth = 400;
+
+<Carousel 
+  scrollSnapType="start"
+  scrollOffset={itemWidth}
+>
+  {items.map((item) => (
+    <div style={{ width: `${itemWidth}px`, flexShrink: 0 }}>
+      {item}
+    </div>
+  ))}
+</Carousel>
+```
+
+## Default Behavior
+
+From `carousel.tsx:15`, the default snap type is `"start"`:
+
+```tsx
+const defaultProps = {
+  theme: "light" as Theme,
+  iconOptions: {
+    icon: <span>&#8249;</span> as ReactNode,
+    iconStyles: { color: "whitesmoke", backgroundColor: "#333" },
+  } as IconOptions,
+  scrollSnapType: "start" as ScrollSnapOptions,
+  scrollOffset: DEFAULT_SCROLL_OFFSET, // 1000px
+  scrollEasing: DEFAULT_EASING,
+  duration: DEFAULT_DURATION
+};
+```

@@ -1,0 +1,393 @@
+---
+title: 'Image Gallery'
+description: 'Build a responsive image carousel with proper sizing and optimization'
+icon: 'images'
+---
+
+## Basic Image Carousel
+
+Create a simple image gallery with the carousel:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function ImageGallery() {
+  const images = [
+    { id: 1, src: '/images/photo-1.jpg', alt: 'Mountain landscape' },
+    { id: 2, src: '/images/photo-2.jpg', alt: 'Ocean sunset' },
+    { id: 3, src: '/images/photo-3.jpg', alt: 'Forest path' },
+    { id: 4, src: '/images/photo-4.jpg', alt: 'City skyline' },
+  ];
+
+  return (
+    <Carousel 
+      scrollSnapType="center"
+      scrollOffset={420}
+    >
+      {images.map((image) => (
+        <div key={image.id} className="image-slide">
+          <img src={image.src} alt={image.alt} />
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+.image-slide {
+  min-width: 400px;
+  height: 300px;
+  margin: 0 10px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.image-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+```
+
+<Note>
+  Setting `object-fit: cover` ensures images fill the container while maintaining their aspect ratio.
+</Note>
+
+## Responsive Image Gallery
+
+Make your gallery responsive across different screen sizes:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+import { useState, useEffect } from 'react';
+
+function ResponsiveGallery() {
+  const [scrollOffset, setScrollOffset] = useState(420);
+
+  useEffect(() => {
+    const updateScrollOffset = () => {
+      if (window.innerWidth < 768) {
+        setScrollOffset(window.innerWidth - 40); // Mobile: full width minus margins
+      } else if (window.innerWidth < 1024) {
+        setScrollOffset(360); // Tablet
+      } else {
+        setScrollOffset(420); // Desktop
+      }
+    };
+
+    updateScrollOffset();
+    window.addEventListener('resize', updateScrollOffset);
+    return () => window.removeEventListener('resize', updateScrollOffset);
+  }, []);
+
+  const images = [
+    { id: 1, src: '/images/photo-1.jpg', alt: 'Mountain landscape' },
+    { id: 2, src: '/images/photo-2.jpg', alt: 'Ocean sunset' },
+    { id: 3, src: '/images/photo-3.jpg', alt: 'Forest path' },
+  ];
+
+  return (
+    <Carousel 
+      scrollSnapType="center"
+      scrollOffset={scrollOffset}
+      duration={500}
+    >
+      {images.map((image) => (
+        <div key={image.id} className="responsive-image-slide">
+          <img src={image.src} alt={image.alt} />
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+.responsive-image-slide {
+  min-width: 400px;
+  height: 300px;
+  margin: 0 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+@media (max-width: 1024px) {
+  .responsive-image-slide {
+    min-width: 340px;
+    height: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  .responsive-image-slide {
+    min-width: calc(100vw - 40px);
+    height: 240px;
+    margin: 0 5px;
+  }
+}
+
+.responsive-image-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+```
+
+## Gallery with Captions
+
+Add captions to your images for better context:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function GalleryWithCaptions() {
+  const photos = [
+    {
+      id: 1,
+      src: '/images/photo-1.jpg',
+      alt: 'Mountain landscape',
+      caption: 'Swiss Alps at Dawn',
+      location: 'Switzerland',
+    },
+    {
+      id: 2,
+      src: '/images/photo-2.jpg',
+      alt: 'Ocean sunset',
+      caption: 'Pacific Coast Sunset',
+      location: 'California, USA',
+    },
+    {
+      id: 3,
+      src: '/images/photo-3.jpg',
+      alt: 'Forest path',
+      caption: 'Enchanted Forest Trail',
+      location: 'Black Forest, Germany',
+    },
+  ];
+
+  return (
+    <Carousel 
+      scrollSnapType="center"
+      scrollOffset={450}
+      theme="dark"
+    >
+      {photos.map((photo) => (
+        <div key={photo.id} className="photo-card">
+          <div className="photo-wrapper">
+            <img src={photo.src} alt={photo.alt} />
+          </div>
+          <div className="photo-caption">
+            <h3>{photo.caption}</h3>
+            <p>{photo.location}</p>
+          </div>
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+.photo-card {
+  min-width: 400px;
+  margin: 0 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.photo-wrapper {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+}
+
+.photo-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.photo-card:hover .photo-wrapper img {
+  transform: scale(1.05);
+}
+
+.photo-caption {
+  padding: 1.5rem;
+  background: white;
+}
+
+.photo-caption h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.photo-caption p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+```
+
+## Product Gallery
+
+Create a product showcase carousel for e-commerce:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function ProductGallery() {
+  const products = [
+    {
+      id: 1,
+      image: '/products/product-1.jpg',
+      name: 'Wireless Headphones',
+      price: '$199',
+    },
+    {
+      id: 2,
+      image: '/products/product-2.jpg',
+      name: 'Smart Watch',
+      price: '$299',
+    },
+    {
+      id: 3,
+      image: '/products/product-3.jpg',
+      name: 'Laptop Stand',
+      price: '$79',
+    },
+  ];
+
+  return (
+    <Carousel 
+      scrollSnapType="start"
+      scrollOffset={280}
+      duration={500}
+    >
+      {products.map((product) => (
+        <div key={product.id} className="product-card">
+          <div className="product-image">
+            <img src={product.image} alt={product.name} />
+          </div>
+          <div className="product-info">
+            <h4>{product.name}</h4>
+            <p className="price">{product.price}</p>
+            <button className="buy-button">Add to Cart</button>
+          </div>
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+.product-card {
+  min-width: 250px;
+  margin-right: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.product-image {
+  width: 100%;
+  height: 250px;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 1rem;
+}
+
+.product-info {
+  padding: 1rem;
+}
+
+.product-info h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: #111;
+}
+
+.price {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.buy-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.buy-button:hover {
+  background: #1d4ed8;
+}
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Image Optimization">
+    - Use responsive images with `srcset` for different screen sizes
+    - Compress images to reduce load times
+    - Use lazy loading for images outside the viewport
+    - Consider WebP format for better compression
+  </Accordion>
+
+  <Accordion title="Sizing Guidelines">
+    - Set `min-width` on carousel items to prevent layout shifts
+    - Make `scrollOffset` slightly larger than item width to account for margins
+    - Use `object-fit: cover` for consistent image display
+    - Add `overflow: hidden` to prevent image overflow
+  </Accordion>
+
+  <Accordion title="Accessibility">
+    - Always provide descriptive `alt` text for images
+    - Ensure sufficient color contrast for captions
+    - Test keyboard navigation (carousel has built-in arrow buttons)
+    - Consider adding ARIA labels for context
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  For optimal performance, match your `scrollOffset` prop to your image container width (including margins).
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Auto-Scroll" icon="forward" href="/examples/auto-scroll">
+    Add automatic image rotation
+  </Card>
+  <Card title="Custom Styling" icon="paintbrush" href="/examples/custom-styling">
+    Customize navigation icons and appearance
+  </Card>
+</CardGroup>

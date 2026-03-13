@@ -1,0 +1,667 @@
+---
+title: 'Accessibility'
+description: 'Build accessible carousels that work for all users, including those using screen readers and keyboard navigation'
+---
+
+## Overview
+
+AnyCarousel is built with accessibility in mind, providing semantic HTML, ARIA attributes, and keyboard support out of the box. This guide shows you how to maximize accessibility for all users.
+
+## Built-in Accessibility Features
+
+### Semantic HTML Structure
+
+From carousel.tsx:142-172, the carousel uses proper semantic markup:
+
+```tsx
+<div role="region" aria-label="Carousel" className="carousel-wrapper">
+  {showLeft && (
+    <CircularButton
+      className="nav-button left"
+      onClick={() => triggerScroll(-1)}
+      icon={iconOptions.icon}
+      style={iconOptions.iconStyles}
+      theme={theme}
+      aria-label="Previous item"
+    />
+  )}
+  <div
+    className="carousel-container"
+    ref={containerRef}
+    onScroll={handleScroll}
+    style={{ scrollSnapType: `x ${scrollSnapType}` }}
+  >
+    {children}
+  </div>
+  {showRight && (
+    <CircularButton
+      className="nav-button right"
+      onClick={() => triggerScroll(1)}
+      icon={iconOptions.icon}
+      style={iconOptions.iconStyles}
+      theme={theme}
+      aria-label="Next item"
+    />
+  )}
+</div>
+```
+
+### ARIA Attributes
+
+1. **`role="region"`**: Identifies the carousel as a landmark region
+2. **`aria-label="Carousel"`**: Provides a descriptive label for screen readers
+3. **`aria-label="Previous item"`**: Labels the left navigation button
+4. **`aria-label="Next item"`**: Labels the right navigation button
+
+<Note>
+  These attributes help screen reader users understand the purpose of the carousel and its navigation controls.
+</Note>
+
+## Customizing ARIA Labels
+
+While the carousel provides default labels, you should customize them for your content:
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+
+function ProductCarousel({ products }) {
+  return (
+    <div role="region" aria-label="Featured Products Carousel">
+      <h2 id="carousel-heading">Featured Products</h2>
+      <Carousel
+        scrollOffset={400}
+        scrollSnapType="start"
+      >
+        {products.map((product, index) => (
+          <article
+            key={product.id}
+            aria-label={`Product ${index + 1} of ${products.length}: ${product.name}`}
+            role="group"
+          >
+            <img src={product.image} alt={product.name} />
+            <h3>{product.name}</h3>
+            <p>{product.description}</p>
+            <span aria-label={`Price: $${product.price}`}>
+              ${product.price}
+            </span>
+          </article>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+```
+
+### Better Carousel Labels
+
+<CodeGroup>
+
+```tsx Image Gallery
+<div role="region" aria-label="Photo Gallery" aria-describedby="gallery-desc">
+  <p id="gallery-desc" className="sr-only">
+    Navigate through vacation photos using arrow buttons or swipe
+  </p>
+  <Carousel>
+    {photos.map((photo, idx) => (
+      <figure key={photo.id} aria-label={`Photo ${idx + 1} of ${photos.length}`}>
+        <img src={photo.url} alt={photo.caption} />
+        <figcaption>{photo.caption}</figcaption>
+      </figure>
+    ))}
+  </Carousel>
+</div>
+```
+
+```tsx Testimonials
+<section aria-labelledby="testimonials-heading">
+  <h2 id="testimonials-heading">Customer Testimonials</h2>
+  <Carousel>
+    {testimonials.map((testimonial, idx) => (
+      <blockquote
+        key={testimonial.id}
+        role="group"
+        aria-label={`Testimonial ${idx + 1} of ${testimonials.length}`}
+      >
+        <p>{testimonial.quote}</p>
+        <cite>— {testimonial.author}, {testimonial.role}</cite>
+      </blockquote>
+    ))}
+  </Carousel>
+</section>
+```
+
+```tsx News Articles
+<div role="region" aria-label="Latest News">
+  <Carousel>
+    {articles.map((article, idx) => (
+      <article
+        key={article.id}
+        aria-labelledby={`article-${article.id}-title`}
+      >
+        <h3 id={`article-${article.id}-title`}>{article.title}</h3>
+        <time dateTime={article.date}>{formatDate(article.date)}</time>
+        <p>{article.excerpt}</p>
+        <a href={article.url}>Read more</a>
+      </article>
+    ))}
+  </Carousel>
+</div>
+```
+
+</CodeGroup>
+
+## Keyboard Navigation
+
+### Navigation Button Support
+
+The carousel's navigation buttons are fully keyboard accessible:
+
+- **Tab**: Move focus between navigation buttons
+- **Enter/Space**: Activate the focused button to scroll
+- **Shift + Tab**: Move focus backward
+
+From CircularButton.tsx:22-44, buttons are native `<button>` elements:
+
+```tsx
+<button
+  data-testid={`nav-icon-btn`}
+  onClick={onClick}
+  className={`circular-button ${className}`}
+  style={{...}}
+>
+  {icon}
+</button>
+```
+
+<Tip>
+  Native `<button>` elements provide built-in keyboard support. Never use `<div>` with `onClick` for navigation controls.
+</Tip>
+
+### Enhanced Keyboard Support
+
+Add custom keyboard handlers for arrow key navigation:
+
+```tsx
+import { useRef } from 'react';
+import { Carousel } from 'react-any-carousal';
+
+function KeyboardAccessibleCarousel({ items }) {
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      // Trigger left scroll
+      document.querySelector<HTMLButtonElement>('.nav-button.left')?.click();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      // Trigger right scroll
+      document.querySelector<HTMLButtonElement>('.nav-button.right')?.click();
+    }
+  };
+
+  return (
+    <div
+      ref={carouselRef}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="region"
+      aria-label="Product Carousel"
+    >
+      <Carousel scrollOffset={400}>
+        {items.map((item) => (
+          <div key={item.id}>{item.content}</div>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+```
+
+### Focus Management
+
+Manage focus for a better keyboard experience:
+
+```tsx
+import { useRef, useState } from 'react';
+import { Carousel } from 'react-any-carousal';
+
+function FocusManagedCarousel({ items }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const scrollToItem = (index: number) => {
+    setCurrentIndex(index);
+    itemRefs.current[index]?.focus();
+  };
+
+  return (
+    <div>
+      <div role="group" aria-label="Carousel navigation">
+        <button
+          onClick={() => scrollToItem(Math.max(0, currentIndex - 1))}
+          disabled={currentIndex === 0}
+          aria-label="Previous item"
+        >
+          Previous
+        </button>
+        <button
+          onClick={() => scrollToItem(Math.min(items.length - 1, currentIndex + 1))}
+          disabled={currentIndex === items.length - 1}
+          aria-label="Next item"
+        >
+          Next
+        </button>
+      </div>
+
+      <Carousel scrollOffset={400}>
+        {items.map((item, index) => (
+          <div
+            key={item.id}
+            ref={(el) => (itemRefs.current[index] = el)}
+            tabIndex={index === currentIndex ? 0 : -1}
+            role="group"
+            aria-label={`Item ${index + 1} of ${items.length}`}
+          >
+            {item.content}
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+```
+
+## Screen Reader Announcements
+
+### Live Regions for Dynamic Updates
+
+Announce carousel changes to screen reader users:
+
+```tsx
+import { useState, useRef, useEffect } from 'react';
+import { Carousel } from 'react-any-carousal';
+
+function AnnouncingCarousel({ items }) {
+  const [announcement, setAnnouncement] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    // Calculate which item is currently visible
+    const container = containerRef.current;
+    if (!container) return;
+
+    const scrollLeft = container.scrollLeft;
+    const itemWidth = 400; // Your item width
+    const currentIndex = Math.round(scrollLeft / itemWidth);
+
+    setAnnouncement(
+      `Showing item ${currentIndex + 1} of ${items.length}: ${items[currentIndex]?.title}`
+    );
+  };
+
+  return (
+    <div>
+      {/* Screen reader announcement */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {announcement}
+      </div>
+
+      <div ref={containerRef} onScroll={handleScroll}>
+        <Carousel scrollOffset={400}>
+          {items.map((item) => (
+            <div key={item.id}>{item.content}</div>
+          ))}
+        </Carousel>
+      </div>
+    </div>
+  );
+}
+```
+
+```css
+/* Visually hidden but accessible to screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+```
+
+## Color Contrast & Visual Accessibility
+
+### Meeting WCAG Standards
+
+Ensure navigation buttons meet WCAG AA contrast requirements (4.5:1 for normal text):
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+import { ChevronLeft } from 'react-icons/fa';
+
+function AccessibleIconsCarousel() {
+  return (
+    <Carousel
+      iconOptions={{
+        icon: <ChevronLeft />,
+        iconStyles: {
+          // High contrast combination
+          color: '#1F2937',              // Dark gray text
+          backgroundColor: '#FFFFFF',     // White background
+          border: '2px solid #1F2937',   // Dark border for extra clarity
+          
+          // Focus visible state (add via CSS)
+          outline: '3px solid transparent',
+          outlineOffset: '2px',
+        }
+      }}
+    >
+      {/* Items */}
+    </Carousel>
+  );
+}
+```
+
+### Focus Indicators
+
+Add visible focus styles:
+
+```css
+/* Focus styles for navigation buttons */
+.circular-button:focus-visible {
+  outline: 3px solid #2563EB;
+  outline-offset: 2px;
+}
+
+/* Focus styles for carousel items */
+.carousel-item:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+/* Never remove focus indicators */
+.carousel-wrapper *:focus:not(:focus-visible) {
+  outline: none;
+}
+```
+
+<Warning>
+  Never use `outline: none` without providing an alternative focus indicator. This makes navigation impossible for keyboard users.
+</Warning>
+
+## Motion & Animation Accessibility
+
+### Respecting Reduced Motion Preferences
+
+Disable or reduce animations for users who prefer reduced motion:
+
+```tsx
+import { useEffect, useState } from 'react';
+import { Carousel } from 'react-any-carousal';
+
+function MotionSafeCarousel({ items }) {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  return (
+    <Carousel
+      duration={prefersReducedMotion ? 0 : 600}  // No animation if reduced motion
+      scrollEasing={prefersReducedMotion ? "linear" : "cubic-bezier(0.25, 0.8, 0.5, 1)"}
+      autoSlideInterval={prefersReducedMotion ? undefined : 5000}  // Disable auto-scroll
+      scrollOffset={400}
+    >
+      {items.map((item) => (
+        <div key={item.id}>{item.content}</div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+/* CSS-based approach */
+@media (prefers-reduced-motion: reduce) {
+  .carousel-container {
+    scroll-behavior: auto !important;
+  }
+  
+  .carousel-item {
+    transition: none !important;
+  }
+}
+```
+
+## Auto-Scroll Accessibility
+
+Auto-scrolling carousels can be problematic for accessibility:
+
+<Steps>
+  <Step title="Provide pause controls">
+    ```tsx
+    function AutoScrollCarousel({ items }) {
+      const [isPaused, setIsPaused] = useState(false);
+
+      return (
+        <div>
+          <button
+            onClick={() => setIsPaused(!isPaused)}
+            aria-label={isPaused ? 'Resume auto-scroll' : 'Pause auto-scroll'}
+          >
+            {isPaused ? 'Resume' : 'Pause'}
+          </button>
+
+          <Carousel
+            autoSlideInterval={isPaused ? undefined : 5000}
+            scrollOffset={400}
+          >
+            {items.map((item) => (
+              <div key={item.id}>{item.content}</div>
+            ))}
+          </Carousel>
+        </div>
+      );
+    }
+    ```
+  </Step>
+
+  <Step title="Pause on hover and focus">
+    ```tsx
+    function HoverPauseCarousel({ items }) {
+      const [isPaused, setIsPaused] = useState(false);
+
+      return (
+        <div
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onFocus={() => setIsPaused(true)}
+          onBlur={() => setIsPaused(false)}
+        >
+          <Carousel
+            autoSlideInterval={isPaused ? undefined : 5000}
+          >
+            {items.map((item) => (
+              <div key={item.id}>{item.content}</div>
+            ))}
+          </Carousel>
+        </div>
+      );
+    }
+    ```
+  </Step>
+
+  <Step title="Provide sufficient time (WCAG 2.2.2)">
+    ```tsx
+    // Minimum 5 seconds per slide recommended
+    <Carousel autoSlideInterval={5000}>
+      {/* Items */}
+    </Carousel>
+    ```
+  </Step>
+</Steps>
+
+<Warning>
+  WCAG Success Criterion 2.2.2 requires that auto-scrolling can be paused, stopped, or hidden by the user.
+</Warning>
+
+## Complete Accessible Example
+
+```tsx
+import { useState, useEffect, useRef } from 'react';
+import { Carousel } from 'react-any-carousal';
+import { ChevronLeft } from 'react-icons/fa';
+
+function FullyAccessibleCarousel({ products }) {
+  const [isPaused, setIsPaused] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [announcement, setAnnouncement] = useState('');
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  return (
+    <section aria-labelledby="products-heading">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2 id="products-heading">Featured Products</h2>
+        <button
+          onClick={() => setIsPaused(!isPaused)}
+          aria-label={isPaused ? 'Resume auto-scroll' : 'Pause auto-scroll'}
+          aria-pressed={isPaused}
+        >
+          {isPaused ? '▶️ Resume' : '⏸️ Pause'}
+        </button>
+      </div>
+
+      {/* Screen reader announcements */}
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </div>
+
+      <div
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <Carousel
+          autoSlideInterval={isPaused || prefersReducedMotion ? undefined : 5000}
+          duration={prefersReducedMotion ? 0 : 600}
+          scrollOffset={400}
+          scrollSnapType="start"
+          iconOptions={{
+            icon: <ChevronLeft />,
+            iconStyles: {
+              color: '#1F2937',
+              backgroundColor: '#FFFFFF',
+              border: '2px solid #1F2937',
+              width: '48px',
+              height: '48px',
+            }
+          }}
+        >
+          {products.map((product, index) => (
+            <article
+              key={product.id}
+              role="group"
+              aria-label={`Product ${index + 1} of ${products.length}: ${product.name}`}
+              tabIndex={0}
+            >
+              <img
+                src={product.image}
+                alt={product.name}
+                loading="lazy"
+              />
+              <h3>{product.name}</h3>
+              <p>{product.description}</p>
+              <p aria-label={`Price: $${product.price}`}>
+                ${product.price}
+              </p>
+              <a href={`/products/${product.id}`} aria-label={`View details for ${product.name}`}>
+                View Details
+              </a>
+            </article>
+          ))}
+        </Carousel>
+      </div>
+    </section>
+  );
+}
+```
+
+## Accessibility Checklist
+
+<Steps>
+  <Step title="Semantic HTML">
+    - [ ] Use proper heading hierarchy
+    - [ ] Use semantic elements (`<article>`, `<figure>`, etc.)
+    - [ ] Native `<button>` elements for controls
+  </Step>
+
+  <Step title="ARIA Attributes">
+    - [ ] Custom `aria-label` for carousel region
+    - [ ] `aria-label` for each carousel item
+    - [ ] `role="group"` or `role="article"` on items
+    - [ ] Live region for announcements
+  </Step>
+
+  <Step title="Keyboard Support">
+    - [ ] All controls keyboard accessible
+    - [ ] Visible focus indicators
+    - [ ] Logical tab order
+    - [ ] Arrow key navigation (optional)
+  </Step>
+
+  <Step title="Visual Accessibility">
+    - [ ] WCAG AA color contrast (4.5:1)
+    - [ ] Focus indicators visible
+    - [ ] Touch targets ≥ 44x44px
+    - [ ] Text alternatives for images
+  </Step>
+
+  <Step title="Motion & Timing">
+    - [ ] Respect `prefers-reduced-motion`
+    - [ ] Pause controls for auto-scroll
+    - [ ] Sufficient time per slide (≥5s)
+    - [ ] Pause on hover/focus
+  </Step>
+
+  <Step title="Screen Reader Testing">
+    - [ ] Test with NVDA (Windows)
+    - [ ] Test with JAWS (Windows)
+    - [ ] Test with VoiceOver (Mac/iOS)
+    - [ ] Test with TalkBack (Android)
+  </Step>
+</Steps>
+
+## Testing Tools
+
+- **axe DevTools**: Browser extension for automated accessibility testing
+- **WAVE**: Web accessibility evaluation tool
+- **Lighthouse**: Built into Chrome DevTools
+- **Screen readers**: NVDA, JAWS, VoiceOver, TalkBack
+- **Keyboard only**: Navigate your site using only Tab, Enter, and arrow keys
+
+<Tip>
+  Automated tools catch only ~30-40% of accessibility issues. Manual testing with keyboard and screen readers is essential.
+</Tip>

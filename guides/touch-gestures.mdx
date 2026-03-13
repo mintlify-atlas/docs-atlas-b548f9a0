@@ -1,0 +1,481 @@
+---
+title: 'Touch Gestures'
+description: 'Learn how AnyCarousel handles touch gestures, mouse scrolling, and keyboard navigation'
+---
+
+## Overview
+
+AnyCarousel provides native scroll support for touch devices, trackpads, and mouse wheels. The carousel leverages browser-native scrolling mechanisms for smooth, performant interactions across all devices.
+
+## Native Scroll Support
+
+The carousel uses a scrollable container (`overflow-x: auto`) that supports all native browser scroll behaviors:
+
+```tsx
+// From carousel.tsx:154-158
+<div
+  className="carousel-container"
+  ref={containerRef}
+  onScroll={handleScroll}
+  style={{ scrollSnapType: `x ${scrollSnapType}` }}
+>
+  {children}
+</div>
+```
+
+### CSS Implementation
+
+From carousel.css:14-30:
+
+```css
+.carousel-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding-inline: 1rem;
+
+  /* Hide the scrollbar */
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
+  scrollbar-width: none;
+}
+
+.carousel-container::-webkit-scrollbar {
+  display: none;
+}
+```
+
+<Note>
+  The scrollbar is hidden for a cleaner UI, but all native scroll functionality remains active.
+</Note>
+
+## Touch Gestures on Mobile
+
+### Swipe to Scroll
+
+On touch devices (phones and tablets), users can swipe left or right to scroll:
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+
+function MobileCarousel() {
+  return (
+    <Carousel
+      scrollSnapType="center"  // Smooth snapping on mobile
+      scrollOffset={300}       // Smaller offset for mobile
+      duration={400}           // Faster transitions
+    >
+      {items.map((item) => (
+        <div key={item.id} className="item">
+          {item.content}
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+**User Experience:**
+- Swipe left → Scroll to next items
+- Swipe right → Scroll to previous items
+- Natural momentum scrolling
+- Smooth deceleration based on swipe velocity
+
+### Scroll Snap Behavior
+
+When `scrollSnapType` is set, items snap into place after swiping:
+
+<CodeGroup>
+
+```tsx Center Snap (Mobile-Friendly)
+<Carousel scrollSnapType="center">
+  {/* Centers the item after swipe */}
+</Carousel>
+```
+
+```tsx Start Snap (List-Style)
+<Carousel scrollSnapType="start">
+  {/* Aligns items to the start */}
+</Carousel>
+```
+
+```tsx End Snap
+<Carousel scrollSnapType="end">
+  {/* Aligns items to the end */}
+</Carousel>
+```
+
+```tsx No Snap (Free Scroll)
+<Carousel scrollSnapType="none">
+  {/* Free scrolling without snapping */}
+</Carousel>
+```
+
+</CodeGroup>
+
+### Touch-Friendly Configuration
+
+```tsx
+function TouchOptimizedCarousel() {
+  return (
+    <Carousel
+      scrollSnapType="center"
+      scrollOffset={320}  // Matches average mobile item width
+      duration={300}      // Quick transitions for better mobile UX
+      iconOptions={{
+        icon: <ChevronIcon />,
+        iconStyles: {
+          width: '48px',   // Minimum touch target size
+          height: '48px',  // Recommended: 44-48px for accessibility
+        }
+      }}
+    >
+      {items.map((item) => (
+        <div
+          key={item.id}
+          style={{
+            width: '300px',
+            touchAction: 'pan-x',  // Only allow horizontal scrolling
+          }}
+        >
+          {item.content}
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+<Tip>
+  Set `touchAction: 'pan-x'` on carousel items to prevent vertical scrolling conflicts on mobile devices.
+</Tip>
+
+## Desktop Interactions
+
+### Mouse Wheel / Trackpad Scroll
+
+On desktop, users can scroll horizontally using:
+
+1. **Shift + Mouse Wheel**: Hold Shift and scroll vertically to move horizontally
+2. **Two-finger trackpad scroll**: Natural horizontal swipe on MacBook/laptop trackpads
+3. **Horizontal scroll wheel**: If the mouse has a horizontal scroll capability
+
+```tsx
+function DesktopCarousel() {
+  return (
+    <Carousel
+      scrollSnapType="start"  // Start alignment works well on desktop
+      scrollOffset={1000}     // Larger offset to scroll multiple items
+      duration={600}          // Smooth animated transitions
+    >
+      {items.map((item) => (
+        <div key={item.id} style={{ width: '350px' }}>
+          {item.content}
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+### Navigation Buttons
+
+The carousel provides left/right navigation buttons that trigger programmatic scrolling:
+
+```tsx
+// From carousel.tsx:78-84
+const triggerScroll = (direction: number) => {
+  setAutoScrollEnabled(false); // Stop auto-scrolling on user interaction
+  if (!containerRef.current) return;
+
+  const easing = customScrollEasingFn;
+  animateScrollBy(containerRef.current, (scrollOffset * direction), sanitizedDuration, easing);
+};
+```
+
+**Button behavior:**
+- Left button: `triggerScroll(-1)` → Scrolls backward by `scrollOffset`
+- Right button: `triggerScroll(1)` → Scrolls forward by `scrollOffset`
+- Buttons auto-hide when at the start/end of the carousel
+
+### Button Visibility Logic
+
+From carousel.tsx:65-71:
+
+```tsx
+const handleScroll = () => {
+  if (!containerRef.current) return;
+  const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+
+  setShowLeft(scrollLeft > 0);
+  setShowRight(scrollLeft + clientWidth < scrollWidth - 1);
+};
+```
+
+- **Left button**: Shows when `scrollLeft > 0` (not at the start)
+- **Right button**: Shows when there's more content to scroll
+
+## Animated Scrolling
+
+### Custom Easing Function
+
+The carousel uses cubic-bezier easing for smooth animations:
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+
+function SmoothCarousel() {
+  return (
+    <Carousel
+      scrollEasing="cubic-bezier(0.25, 1, 0.5, 1)"  // Custom easing
+      duration={800}  // 800ms scroll duration
+      scrollOffset={600}
+    >
+      {/* Items */}
+    </Carousel>
+  );
+}
+```
+
+**Default easing**: `cubic-bezier(0.42, 0, 0.58, 1)` (ease-in-out)
+
+### Animation Implementation
+
+From carousel.tsx:93-112:
+
+```tsx
+const animateScrollBy = useCallback((
+  container: HTMLDivElement,
+  offset: number,
+  duration: number,
+  easingFn: (t: number) => number
+) => {
+  const start = container.scrollLeft;
+  const startTime = performance.now();
+
+  const step = (currentTime: number) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = easingFn(progress);
+    container.scrollLeft = start + offset * eased;
+
+    if (progress < 1) requestAnimationFrame(step);
+  };
+
+  requestAnimationFrame(step);
+}, []);
+```
+
+This creates smooth, GPU-accelerated scrolling animations using `requestAnimationFrame`.
+
+## Keyboard Navigation
+
+While the carousel doesn't implement custom keyboard handlers, the native scroll container supports standard keyboard navigation:
+
+### Supported Keys
+
+| Key | Action |
+|-----|--------|
+| `Arrow Left` | Scroll left (when container is focused) |
+| `Arrow Right` | Scroll right (when container is focused) |
+| `Tab` | Navigate to next button |
+| `Enter/Space` | Click focused navigation button |
+
+### Enabling Keyboard Support
+
+Make the carousel focusable:
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+
+function KeyboardCarousel() {
+  return (
+    <div>
+      <Carousel scrollOffset={400}>
+        {items.map((item) => (
+          <div
+            key={item.id}
+            tabIndex={0}  // Make items focusable
+            role="group"
+            aria-label={item.title}
+          >
+            {item.content}
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+```
+
+<Warning>
+  The carousel container itself doesn't have `tabIndex={0}` by default. For full keyboard navigation, consider wrapping it in a focusable container or adding custom keyboard event handlers.
+</Warning>
+
+## Gesture Conflicts & Solutions
+
+### Preventing Vertical Scroll
+
+Prevent vertical scrolling when swiping horizontally:
+
+```css
+.carousel-container {
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: none;
+}
+```
+
+```tsx
+<div style={{ touchAction: 'pan-x' }}>
+  <Carousel>
+    {/* Items */}
+  </Carousel>
+</div>
+```
+
+### Nested Scrollable Content
+
+If carousel items contain scrollable content:
+
+```tsx
+function CarouselWithScrollableCards() {
+  return (
+    <Carousel scrollOffset={400}>
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className="card"
+          style={{
+            width: '350px',
+            overflowY: 'auto',  // Vertical scroll inside cards
+            touchAction: 'pan-y',  // Only vertical scroll inside
+          }}
+        >
+          <h3>{item.title}</h3>
+          <p>{item.longDescription}</p>
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+## Auto-Scroll with User Interaction
+
+Auto-scrolling stops when the user interacts with the carousel:
+
+```tsx
+// From carousel.tsx:78-79
+const triggerScroll = (direction: number) => {
+  setAutoScrollEnabled(false); // Stop auto-scrolling on user interaction
+  // ...
+};
+```
+
+Example with auto-scroll:
+
+```tsx
+function AutoScrollCarousel() {
+  return (
+    <Carousel
+      autoSlideInterval={3000}  // Auto-scroll every 3 seconds
+      scrollOffset={400}
+      duration={600}
+    >
+      {/* User swipe or button click will stop auto-scrolling */}
+      {items.map((item) => (
+        <div key={item.id}>{item.content}</div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+<Note>
+  Once auto-scrolling is disabled by user interaction, it won't re-enable unless the component is remounted or you add custom logic to re-enable it.
+</Note>
+
+## Best Practices
+
+### Mobile Touch Optimization
+
+```tsx
+function MobileOptimized() {
+  return (
+    <Carousel
+      scrollSnapType="center"  // Better mobile UX
+      scrollOffset={300}       // Single item scroll
+      duration={300}           // Fast response
+      iconOptions={{
+        icon: <Icon />,
+        iconStyles: {
+          width: '48px',      // Touch-friendly size
+          height: '48px',
+        }
+      }}
+    >
+      {items.map((item) => (
+        <div
+          key={item.id}
+          style={{
+            width: '280px',
+            touchAction: 'pan-x',
+          }}
+        >
+          {item.content}
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+### Desktop Optimization
+
+```tsx
+function DesktopOptimized() {
+  return (
+    <Carousel
+      scrollSnapType="start"
+      scrollOffset={1000}  // Scroll multiple items
+      duration={600}       // Smooth animation
+      scrollEasing="cubic-bezier(0.25, 0.8, 0.5, 1)"
+    >
+      {items.map((item) => (
+        <div key={item.id} style={{ width: '350px' }}>
+          {item.content}
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+### Responsive Configuration
+
+```tsx
+import { useState, useEffect } from 'react';
+
+function ResponsiveGestureCarousel() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return (
+    <Carousel
+      scrollSnapType={isMobile ? 'center' : 'start'}
+      scrollOffset={isMobile ? 300 : 1000}
+      duration={isMobile ? 300 : 600}
+    >
+      {items.map((item) => (
+        <div key={item.id}>{item.content}</div>
+      ))}
+    </Carousel>
+  );
+}
+```

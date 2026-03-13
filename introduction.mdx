@@ -1,0 +1,140 @@
+---
+title: Introduction
+description: A highly customizable, smooth, and responsive React carousel library with custom easing and advanced animations.
+---
+
+<img
+  className="block dark:hidden"
+  src="https://img.shields.io/npm/v/react-any-carousel?style=flat-square&color=6366f1"
+  alt="npm version"
+/>
+<img
+  className="hidden dark:block"
+  src="https://img.shields.io/npm/v/react-any-carousel?style=flat-square&color=818cf8"
+  alt="npm version"
+/>
+
+## Welcome to AnyCarousel
+
+AnyCarousel is a powerful, highly adaptable carousel component that covers real use cases like custom content, snapping, auto scroll, and responsive layout. It works for all kinds of content—images, videos, and custom components.
+
+<CardGroup cols={2}>
+  <Card
+    title="Quick Start"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Get up and running with AnyCarousel in minutes
+  </Card>
+  <Card
+    title="Installation"
+    icon="download"
+    href="/installation"
+  >
+    Install AnyCarousel in your React project
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api/carousel"
+  >
+    Explore the complete API documentation
+  </Card>
+  <Card
+    title="Examples"
+    icon="sparkles"
+    href="/examples/basic-carousel"
+  >
+    See real-world usage examples
+  </Card>
+</CardGroup>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Lightweight & Minimalistic" icon="feather">
+    Zero bloat, just the essentials for a smooth carousel experience
+  </Card>
+  <Card title="Mobile & Tablet Friendly" icon="mobile">
+    Smooth swipe gestures for horizontal scrolling on touch devices
+  </Card>
+  <Card title="Custom Easing" icon="wave-pulse">
+    Fine-tune animations with cubic-bezier curves for perfect transitions
+  </Card>
+  <Card title="Auto Scroll" icon="forward">
+    Customizable auto-slide intervals for automatic content rotation
+  </Card>
+  <Card title="Flexible Snapping" icon="magnet">
+    Control how items snap into place (start, center, end, or none)
+  </Card>
+  <Card title="Custom Icons" icon="icons">
+    Replace navigation icons with your own components and styles
+  </Card>
+  <Card title="Desktop Support" icon="desktop">
+    Shift + Scroll and two-finger touchpad gestures for navigation
+  </Card>
+  <Card title="Content Agnostic" icon="puzzle-piece">
+    Works with any React component, images, videos, or custom content
+  </Card>
+</CardGroup>
+
+## Why AnyCarousel?
+
+<Accordion title="Designed for Real Use Cases">
+  Unlike generic carousel libraries, AnyCarousel is built to handle real-world requirements: custom content types, precise control over animations, mobile-first touch interactions, and accessibility out of the box.
+</Accordion>
+
+<Accordion title="Developer-Friendly API">
+  Simple, intuitive props with TypeScript support. Get started in minutes, customize everything when you need to.
+</Accordion>
+
+<Accordion title="Performance-Optimized">
+  Lightweight bundle size, efficient rendering, and smooth 60fps animations using native browser APIs.
+</Accordion>
+
+<Accordion title="Fully Customizable">
+  From easing curves to navigation icons, every aspect of the carousel can be tailored to match your design system.
+</Accordion>
+
+## Quick Example
+
+```tsx
+import { Carousel } from "react-any-carousel";
+
+function App() {
+  return (
+    <Carousel 
+      scrollSnapType="center" 
+      scrollOffset={300} 
+      duration={600}
+    >
+      <div className="card">Item 1</div>
+      <div className="card">Item 2</div>
+      <div className="card">Item 3</div>
+    </Carousel>
+  );
+}
+```
+
+<Note>
+  Ready to get started? Head over to the [Installation](/installation) guide to add AnyCarousel to your project.
+</Note>
+
+## Community & Support
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub Repository"
+    icon="github"
+    href="https://github.com/MayurSMahajan/AnyCarousel"
+  >
+    Star the repo, report issues, or contribute
+  </Card>
+  <Card
+    title="npm Package"
+    icon="npm"
+    href="https://www.npmjs.com/package/react-any-carousel"
+  >
+    View package details and version history
+  </Card>
+</CardGroup>

@@ -1,0 +1,200 @@
+---
+title: 'Auto-Scroll'
+description: 'Implement automatic carousel scrolling with configurable intervals and user interaction handling'
+---
+
+## Overview
+
+Auto-scroll enables your carousel to automatically advance through items at regular intervals, perfect for showcasing content, advertisements, or creating engaging hero sections.
+
+## The autoSlideInterval Prop
+
+The `autoSlideInterval` prop accepts a duration in milliseconds:
+
+```tsx
+<Carousel autoSlideInterval={3000}>
+  <div>Slide 1</div>
+  <div>Slide 2</div>
+  <div>Slide 3</div>
+</Carousel>
+```
+
+This creates a carousel that automatically advances every 3 seconds.
+
+<Info>
+The interval value is passed in **milliseconds**. For example, `3000` equals 3 seconds.
+</Info>
+
+## Implementation Details
+
+### Auto-Scroll State Management
+
+From `carousel.tsx:37`, auto-scroll is enabled when the prop is provided:
+
+```tsx
+const [autoScrollEnabled, setAutoScrollEnabled] = useState(
+  autoSlideInterval ? true : false
+);
+```
+
+### The Auto-Scroll Loop
+
+The complete auto-scroll logic from `carousel.tsx:118-139`:
+
+```tsx
+useEffect(() => {
+  if (!autoScrollEnabled || !containerRef.current || !autoSlideInterval) return;
+
+  const interval = Number(autoSlideInterval);
+  if (isNaN(interval)) return;
+
+  // Use the memoized easing function
+  const easingFn = customScrollEasingFn;
+
+  const intervalId = setInterval(() => {
+    const container = containerRef.current;
+    if (container) {
+      // Check if we need to loop back to the start (simple carousel boundary check)
+      const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
+      const targetOffset = isAtEnd ? -container.scrollWidth : scrollOffset;
+
+      animateScrollBy(container, targetOffset, sanitizedDuration, easingFn);
+    }
+  }, interval);
+
+  return () => clearInterval(intervalId);
+}, [autoScrollEnabled, autoSlideInterval, scrollOffset, sanitizedDuration, customScrollEasingFn]);
+```
+
+### How Looping Works
+
+The carousel intelligently detects when it reaches the end:
+
+```tsx
+const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
+const targetOffset = isAtEnd ? -container.scrollWidth : scrollOffset;
+```
+
+<Tabs>
+  <Tab title="Normal Scroll">
+    When **not at the end**, the carousel scrolls forward by `scrollOffset`:
+    
+    ```tsx
+    animateScrollBy(container, scrollOffset, sanitizedDuration, easingFn);
+    ```
+  </Tab>
+  
+  <Tab title="Loop Back">
+    When **at the end**, the carousel jumps back to the start:
+    
+    ```tsx
+    animateScrollBy(container, -container.scrollWidth, sanitizedDuration, easingFn);
+    ```
+    
+    This scrolls by the negative total width, resetting to the beginning.
+  </Tab>
+</Tabs>
+
+## User Interaction Disables Auto-Scroll
+
+When users click navigation buttons, auto-scroll is automatically disabled to prevent interference.
+
+From `carousel.tsx:78-84`:
+
+```tsx
+const triggerScroll = (direction: number) => {
+  setAutoScrollEnabled(false); // Stop auto-scrolling on user interaction
+  if (!containerRef.current) return;
+
+  const easing = customScrollEasingFn;
+  animateScrollBy(containerRef.current, (scrollOffset * direction), sanitizedDuration, easing);
+};
+```
+
+<Note>
+Once a user interacts with the navigation buttons, auto-scroll stops **permanently** for that carousel instance. This prevents disruptive behavior where the carousel moves while users are trying to navigate manually.
+</Note>
+
+## Complete Example
+
+Here's a practical example combining auto-scroll with other carousel features:
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+
+export default function HeroCarousel() {
+  return (
+    <Carousel
+      autoSlideInterval={5000}
+      scrollSnapType="center"
+      scrollOffset={800}
+      duration={800}
+      theme="dark"
+    >
+      <div className="hero-slide">
+        <img src="/hero1.jpg" alt="Feature 1" />
+        <h2>Welcome to Our Platform</h2>
+      </div>
+      <div className="hero-slide">
+        <img src="/hero2.jpg" alt="Feature 2" />
+        <h2>Powerful Features</h2>
+      </div>
+      <div className="hero-slide">
+        <img src="/hero3.jpg" alt="Feature 3" />
+        <h2>Get Started Today</h2>
+      </div>
+    </Carousel>
+  );
+}
+```
+
+This creates a hero carousel that:
+- Advances every 5 seconds
+- Centers items when snapping
+- Scrolls 800px at a time
+- Uses an 800ms transition duration
+- Displays dark theme navigation buttons
+- Stops auto-scrolling when users click navigation buttons
+
+## Best Practices
+
+<Tip>
+**Choose appropriate intervals**: 
+- **3-5 seconds** for text-heavy content (users need time to read)
+- **5-8 seconds** for images with captions
+- **2-3 seconds** for simple image galleries
+</Tip>
+
+### Accessibility Considerations
+
+<Note>
+For accessibility, consider providing a pause button for auto-scrolling carousels, especially for users who need more time to read content or have motion sensitivity.
+</Note>
+
+## Combining with Other Props
+
+### With Custom Easing
+
+```tsx
+<Carousel
+  autoSlideInterval={4000}
+  scrollEasing="cubic-bezier(0.25, 0.8, 0.5, 1)"
+  duration={1000}
+>
+  {/* Your slides */}
+</Carousel>
+```
+
+### With Custom Scroll Offset
+
+```tsx
+<Carousel
+  autoSlideInterval={3000}
+  scrollOffset={600}
+  scrollSnapType="start"
+>
+  {/* Your slides */}
+</Carousel>
+```
+
+The auto-scroll will use the specified `scrollOffset` value when advancing through items.

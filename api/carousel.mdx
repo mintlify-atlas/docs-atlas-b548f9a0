@@ -1,0 +1,78 @@
+---
+title: Carousel Component
+description: A flexible and customizable React carousel component with smooth scrolling and auto-play support
+---
+
+## Overview
+
+The `Carousel` component is the main component of the library. It provides a horizontal scrolling carousel with navigation buttons, smooth animations, and configurable scroll behavior.
+
+## Import
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+```
+
+## Component Behavior
+
+The Carousel component:
+
+- Displays children in a horizontally scrollable container
+- Shows/hides navigation buttons based on scroll position
+- Supports configurable scroll snapping (start, center, end, or none)
+- Provides smooth scroll animations with customizable easing functions
+- Supports auto-slide functionality with configurable intervals
+- Automatically stops auto-scrolling when users interact with navigation buttons
+- Accessible with proper ARIA labels for navigation buttons
+
+## Basic Usage
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+
+function App() {
+  return (
+    <Carousel>
+      <div>Slide 1</div>
+      <div>Slide 2</div>
+      <div>Slide 3</div>
+    </Carousel>
+  );
+}
+```
+
+## Advanced Usage
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+
+function App() {
+  return (
+    <Carousel
+      theme="dark"
+      scrollSnapType="center"
+      scrollOffset={500}
+      autoSlideInterval={3000}
+      duration={800}
+      scrollEasing="cubic-bezier(0.25, 1, 0.5, 1)"
+      iconOptions={{
+        icon: <span>→</span>,
+        iconStyles: { color: 'white', backgroundColor: '#000' }
+      }}
+    >
+      <div className="slide">Slide 1</div>
+      <div className="slide">Slide 2</div>
+      <div className="slide">Slide 3</div>
+      <div className="slide">Slide 4</div>
+    </Carousel>
+  );
+}
+```
+
+## Props
+
+For detailed prop documentation, see the [Carousel Props](/api/carousel-props) reference.
+
+## TypeScript Types
+
+For information about exported types (`ScrollSnapOptions`, `Theme`, `IconOptions`), see the [Types](/api/types) reference.

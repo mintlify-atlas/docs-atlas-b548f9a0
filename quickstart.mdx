@@ -1,80 +1,285 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick Start
+description: Get up and running with AnyCarousel in minutes
 ---
 
-## Get started in three steps
+Get your first carousel up and running in just a few minutes.
 
-Get your documentation site running locally and make your first customization.
+## Prerequisites
 
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+Before you begin, make sure you have:
+- React 19 or higher installed in your project
+- A package manager (npm, yarn, or pnpm)
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+Already have AnyCarousel installed? Skip to [Step 2](#step-2-create-your-first-carousel).
 </Note>
+
+## Step-by-Step Guide
+
+<Steps>
+  <Step title="Install the package">
+    First, install react-any-carousel in your project:
+
+    <CodeGroup>
+    ```bash npm
+    npm install react-any-carousel
+    ```
+
+    ```bash yarn
+    yarn add react-any-carousel
+    ```
+
+    ```bash pnpm
+    pnpm add react-any-carousel
+    ```
+    </CodeGroup>
+
+    The package includes TypeScript definitions out of the box.
+  </Step>
+
+  <Step title="Create your first carousel">
+    Import the Carousel component and add it to your React component:
+
+    <CodeGroup>
+    ```tsx App.tsx
+    import { Carousel } from "react-any-carousel";
+
+    function App() {
+      return (
+        <div className="app">
+          <h1>My First Carousel</h1>
+          <Carousel
+            scrollSnapType="center"
+            scrollOffset={300}
+            duration={600}
+          >
+            <div className="card">Item 1</div>
+            <div className="card">Item 2</div>
+            <div className="card">Item 3</div>
+            <div className="card">Item 4</div>
+            <div className="card">Item 5</div>
+          </Carousel>
+        </div>
+      );
+    }
+
+    export default App;
+    ```
+
+    ```css styles.css
+    .card {
+      min-width: 300px;
+      height: 200px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0 10px;
+    }
+    ```
+    </CodeGroup>
+
+    <Tip>
+    The `scrollSnapType="center"` prop ensures items snap to the center of the viewport, while `scrollOffset={300}` determines how far the carousel scrolls on each navigation button click.
+    </Tip>
+  </Step>
+
+  <Step title="Understand the key props">
+    Let's break down the props we used:
+
+    - **`scrollSnapType`**: Controls how items snap into view (`"start"`, `"center"`, `"end"`, or `"none"`)
+    - **`scrollOffset`**: The distance (in pixels) to scroll when clicking navigation buttons
+    - **`duration`**: Animation duration in milliseconds (default: 600ms)
+
+    <Info>
+    For a complete list of all available props, see the [API Reference](/api/carousel-props).
+    </Info>
+  </Step>
+
+  <Step title="Add auto-scroll (optional)">
+    Make your carousel automatically advance through items:
+
+    ```tsx
+    <Carousel
+      scrollSnapType="center"
+      scrollOffset={300}
+      duration={600}
+      autoSlideInterval={3000}
+    >
+      {/* your items */}
+    </Carousel>
+    ```
+
+    The carousel will automatically scroll every 3 seconds. User interactions (clicking navigation buttons or swiping) will pause auto-scroll.
+  </Step>
+
+  <Step title="Customize the theme">
+    Switch between light and dark themes:
+
+    ```tsx
+    <Carousel
+      theme="dark"
+      scrollSnapType="center"
+      scrollOffset={300}
+      duration={600}
+    >
+      {/* your items */}
+    </Carousel>
+    ```
+
+    The theme prop changes the navigation button colors to match your design.
+  </Step>
+
+  <Step title="Add custom icons">
+    Replace the default navigation icons with your own:
+
+    ```tsx
+    import { ChevronLeft, ChevronRight } from "lucide-react";
+
+    <Carousel
+      scrollSnapType="center"
+      scrollOffset={300}
+      iconOptions={{
+        icon: <ChevronRight />,
+        iconStyles: {
+          color: "#6366f1",
+          fontSize: "24px",
+          backgroundColor: "white",
+          borderRadius: "50%",
+          padding: "8px"
+        }
+      }}
+    >
+      {/* your items */}
+    </Carousel>
+    ```
+
+    <Note>
+    The same icon component will be automatically flipped for the left navigation button.
+    </Note>
+  </Step>
+</Steps>
+
+## Complete Example
+
+Here's a fully-featured carousel with all the options combined:
+
+```tsx App.tsx
+import { Carousel } from "react-any-carousel";
+import { ChevronRight } from "lucide-react";
+import "./App.css";
+
+function App() {
+  const products = [
+    { id: 1, name: "Product 1", color: "#667eea" },
+    { id: 2, name: "Product 2", color: "#764ba2" },
+    { id: 3, name: "Product 3", color: "#f093fb" },
+    { id: 4, name: "Product 4", color: "#4facfe" },
+  ];
+
+  return (
+    <div className="app">
+      <h1>Product Showcase</h1>
+      <Carousel
+        scrollSnapType="center"
+        scrollOffset={320}
+        duration={800}
+        scrollEasing="cubic-bezier(0.25, 1, 0.5, 1)"
+        autoSlideInterval={4000}
+        theme="light"
+        iconOptions={{
+          icon: <ChevronRight />,
+          iconStyles: {
+            color: "white",
+            fontSize: "28px",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            borderRadius: "50%",
+            padding: "12px"
+          }
+        }}
+      >
+        {products.map((product) => (
+          <div
+            key={product.id}
+            className="product-card"
+            style={{ background: product.color }}
+          >
+            <h2>{product.name}</h2>
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+
+export default App;
+```
+
+## Mobile & Touch Support
+
+Your carousel automatically supports:
+- **Swipe gestures** on mobile and tablet devices
+- **Two-finger scroll** on trackpads
+- **Shift + Mouse Wheel** on desktop for horizontal scrolling
+
+No additional configuration needed!
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card
+    title="Core Concepts"
+    icon="book"
+    href="/concepts/scroll-snapping"
+  >
+    Learn about scroll snapping, easing curves, and theming
+  </Card>
+  <Card
+    title="Custom Icons"
+    icon="icons"
+    href="/guides/custom-icons"
+  >
+    Deep dive into customizing navigation icons
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api/carousel"
+  >
+    Explore all available props and types
+  </Card>
+  <Card
+    title="Examples"
+    icon="sparkles"
+    href="/examples/basic-carousel"
+  >
+    See more real-world examples
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Navigation buttons not appearing">
+    Make sure your carousel items have a total width greater than the container width. Navigation buttons only appear when there's content to scroll to.
+  </Accordion>
+
+  <Accordion title="Items not snapping correctly">
+    Ensure your `scrollOffset` value is appropriate for your item width. For single-item scrolling, set `scrollOffset` close to your item's width.
+  </Accordion>
+
+  <Accordion title="Auto-scroll not working">
+    Check that `autoSlideInterval` is set to a number in milliseconds (e.g., `3000` for 3 seconds). Also ensure there are enough items to scroll through.
+  </Accordion>
+
+  <Accordion title="TypeScript errors">
+    Make sure you're using React 19+ and have `@types/react` and `@types/react-dom` installed. The package includes built-in TypeScript definitions.
+  </Accordion>
+</AccordionGroup>
+
+Need more help? Check out the [full documentation](/introduction) or visit the [GitHub repository](https://github.com/MayurSMahajan/AnyCarousel).

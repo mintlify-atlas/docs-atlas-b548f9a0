@@ -1,0 +1,191 @@
+---
+title: 'Basic Carousel'
+description: 'Get started with a simple carousel implementation'
+icon: 'rectangle-list'
+---
+
+## Simple Carousel
+
+The most basic carousel requires only the `children` prop. Here's the simplest possible implementation:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function BasicCarousel() {
+  return (
+    <Carousel>
+      <div>Slide 1</div>
+      <div>Slide 2</div>
+      <div>Slide 3</div>
+    </Carousel>
+  );
+}
+```
+
+### What's Happening Here?
+
+- **Import the Carousel**: The `Carousel` component is the main export from the library
+- **Pass children**: Any React nodes can be passed as children - divs, components, images, etc.
+- **Default behavior**: By default, the carousel uses:
+  - `scrollSnapType: "start"` - items snap to the start of the container
+  - `scrollOffset: 1000` - scrolls 1000px per navigation click
+  - `duration: 600` - 600ms transition duration
+  - Light theme with default arrow icons
+
+## Carousel with Styled Content
+
+You can pass any React components as children:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function Card({ title, description }) {
+  return (
+    <div className="card">
+      <h3>{title}</h3>
+      <p>{description}</p>
+    </div>
+  );
+}
+
+function StyledCarousel() {
+  return (
+    <Carousel>
+      <Card title="Feature 1" description="First amazing feature" />
+      <Card title="Feature 2" description="Second amazing feature" />
+      <Card title="Feature 3" description="Third amazing feature" />
+    </Carousel>
+  );
+}
+```
+
+```css
+.card {
+  min-width: 300px;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-right: 1rem;
+}
+
+.card h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.card p {
+  margin: 0;
+  color: #666;
+}
+```
+
+## Configuring Scroll Behavior
+
+Control how the carousel scrolls with the `scrollOffset` prop:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function ConfiguredCarousel() {
+  return (
+    <Carousel 
+      scrollOffset={320} // Scroll exactly one card width
+      scrollSnapType="center" // Snap items to center
+    >
+      <div className="item">Item 1</div>
+      <div className="item">Item 2</div>
+      <div className="item">Item 3</div>
+      <div className="item">Item 4</div>
+      <div className="item">Item 5</div>
+    </Carousel>
+  );
+}
+```
+
+```css
+.item {
+  min-width: 300px;
+  height: 200px;
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+```
+
+<Note>
+  Set `scrollOffset` to match your item width for smooth one-item-at-a-time scrolling.
+</Note>
+
+## Scroll Snap Options
+
+The `scrollSnapType` prop controls how items align when scrolling stops:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+// Snap to start (default)
+<Carousel scrollSnapType="start">
+  {/* Items snap to the left edge */}
+</Carousel>
+
+// Snap to center
+<Carousel scrollSnapType="center">
+  {/* Items snap to the center */}
+</Carousel>
+
+// Snap to end
+<Carousel scrollSnapType="end">
+  {/* Items snap to the right edge */}
+</Carousel>
+
+// No snapping
+<Carousel scrollSnapType="none">
+  {/* Free-form scrolling without snapping */}
+</Carousel>
+```
+
+## Dark Theme
+
+Switch to dark theme for better contrast on dark backgrounds:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function DarkCarousel() {
+  return (
+    <Carousel theme="dark">
+      <div>Slide 1</div>
+      <div>Slide 2</div>
+      <div>Slide 3</div>
+    </Carousel>
+  );
+}
+```
+
+<Tip>
+  The `theme` prop only affects the default navigation icons. Custom icons ignore this setting.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Image Gallery" icon="images" href="/examples/image-gallery">
+    Build an image carousel with proper sizing
+  </Card>
+  <Card title="Auto-Scroll" icon="forward" href="/examples/auto-scroll">
+    Add automatic scrolling to your carousel
+  </Card>
+  <Card title="Custom Styling" icon="paintbrush" href="/examples/custom-styling">
+    Customize icons and appearance
+  </Card>
+  <Card title="Advanced" icon="rocket" href="/examples/advanced">
+    Combine multiple features for complex use cases
+  </Card>
+</CardGroup>

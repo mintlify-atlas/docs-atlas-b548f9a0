@@ -1,0 +1,466 @@
+---
+title: 'Responsive Layouts'
+description: 'Create responsive carousel layouts that adapt to different screen sizes and viewports'
+---
+
+## Overview
+
+AnyCarousel provides flexible options for creating responsive layouts that adapt seamlessly across mobile, tablet, and desktop devices. The key to responsive behavior is the `scrollOffset` prop combined with CSS media queries.
+
+## Understanding scrollOffset
+
+The `scrollOffset` prop determines how far the carousel scrolls when navigation buttons are clicked:
+
+```typescript
+type CarouselProps = {
+  scrollOffset?: number;  // Default: 1000 (pixels)
+  // ... other props
+};
+```
+
+### How It Works
+
+From the source code (carousel.tsx:83):
+
+```tsx
+const triggerScroll = (direction: number) => {
+  if (!containerRef.current) return;
+  
+  const easing = customScrollEasingFn;
+  animateScrollBy(containerRef.current, (scrollOffset * direction), sanitizedDuration, easing);
+};
+```
+
+- **Positive direction (1)**: Scrolls forward by `scrollOffset` pixels
+- **Negative direction (-1)**: Scrolls backward by `scrollOffset` pixels
+- Works in combination with `scrollSnapType` for smooth snapping behavior
+
+<Note>
+  If `scrollSnapType` is enabled and `scrollOffset` is less than a child's width, the carousel will still snap to show the next child according to the `scrollSnapType` value.
+</Note>
+
+## Responsive Strategies
+
+### Strategy 1: Dynamic scrollOffset with State
+
+Use React state and window resize listeners to adjust `scrollOffset` based on viewport:
+
+```tsx
+import { Carousel } from 'react-any-carousal';
+import { useState, useEffect } from 'react';
+
+function ResponsiveCarousel() {
+  const [scrollOffset, setScrollOffset] = useState(1000);
+
+  useEffect(() => {
+    const updateScrollOffset = () => {
+      if (window.innerWidth < 640) {
+        setScrollOffset(300);  // Mobile: scroll ~1 item
+      } else if (window.innerWidth < 1024) {
+        setScrollOffset(600);  // Tablet: scroll ~2 items
+      } else {
+        setScrollOffset(1000); // Desktop: scroll ~3 items
+      }
+    };
+
+    updateScrollOffset();
+    window.addEventListener('resize', updateScrollOffset);
+    
+    return () => window.removeEventListener('resize', updateScrollOffset);
+  }, []);
+
+  return (
+    <Carousel scrollOffset={scrollOffset} scrollSnapType="start">
+      {items.map((item) => (
+        <div key={item.id} className="carousel-item">
+          {item.content}
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+### Strategy 2: CSS-Based Responsive Items
+
+Keep `scrollOffset` fixed and use CSS to control item sizes:
+
+<CodeGroup>
+
+```tsx Component
+import { Carousel } from 'react-any-carousal';
+import './carousel-styles.css';
+
+function ResponsiveCarousel() {
+  return (
+    <Carousel
+      scrollOffset={350}  // Scroll roughly one item width
+      scrollSnapType="start"
+    >
+      {items.map((item) => (
+        <div key={item.id} className="responsive-item">
+          <img src={item.image} alt={item.title} />
+          <h3>{item.title}</h3>
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css Styles
+.responsive-item {
+  /* Mobile: Full width minus padding */
+  width: calc(100vw - 4rem);
+  min-width: 280px;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+}
+
+/* Tablet: 2 items visible */
+@media (min-width: 640px) {
+  .responsive-item {
+    width: 320px;
+  }
+}
+
+/* Desktop: 3-4 items visible */
+@media (min-width: 1024px) {
+  .responsive-item {
+    width: 350px;
+  }
+}
+
+/* Large desktop: 4-5 items visible */
+@media (min-width: 1440px) {
+  .responsive-item {
+    width: 400px;
+  }
+}
+```
+
+</CodeGroup>
+
+### Strategy 3: Container-Based Responsive Design
+
+Use CSS container queries for more precise control:
+
+```css
+.carousel-wrapper {
+  container-type: inline-size;
+  container-name: carousel;
+}
+
+.carousel-item {
+  width: 300px;
+  aspect-ratio: 16 / 9;
+}
+
+@container carousel (min-width: 640px) {
+  .carousel-item {
+    width: 280px;
+  }
+}
+
+@container carousel (min-width: 1024px) {
+  .carousel-item {
+    width: 320px;
+  }
+}
+```
+
+## Complete Responsive Example
+
+<Steps>
+  <Step title="Create the responsive hook">
+    ```tsx hooks/useResponsiveCarousel.ts
+    import { useState, useEffect } from 'react';
+
+    type BreakpointConfig = {
+      scrollOffset: number;
+      itemWidth: string;
+    };
+
+    const breakpoints: Record<string, BreakpointConfig> = {
+      mobile: { scrollOffset: 300, itemWidth: '280px' },
+      tablet: { scrollOffset: 600, itemWidth: '320px' },
+      desktop: { scrollOffset: 900, itemWidth: '360px' },
+      wide: { scrollOffset: 1200, itemWidth: '400px' },
+    };
+
+    export function useResponsiveCarousel() {
+      const [config, setConfig] = useState<BreakpointConfig>(breakpoints.desktop);
+
+      useEffect(() => {
+        const updateConfig = () => {
+          const width = window.innerWidth;
+          if (width < 640) setConfig(breakpoints.mobile);
+          else if (width < 1024) setConfig(breakpoints.tablet);
+          else if (width < 1440) setConfig(breakpoints.desktop);
+          else setConfig(breakpoints.wide);
+        };
+
+        updateConfig();
+        window.addEventListener('resize', updateConfig);
+        return () => window.removeEventListener('resize', updateConfig);
+      }, []);
+
+      return config;
+    }
+    ```
+  </Step>
+
+  <Step title="Use the hook in your component">
+    ```tsx ProductCarousel.tsx
+    import { Carousel } from 'react-any-carousal';
+    import { useResponsiveCarousel } from './hooks/useResponsiveCarousel';
+
+    function ProductCarousel({ products }) {
+      const { scrollOffset, itemWidth } = useResponsiveCarousel();
+
+      return (
+        <Carousel
+          scrollOffset={scrollOffset}
+          scrollSnapType="start"
+          duration={600}
+        >
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="product-card"
+              style={{ width: itemWidth }}
+            >
+              <img src={product.image} alt={product.name} />
+              <h3>{product.name}</h3>
+              <p>${product.price}</p>
+            </div>
+          ))}
+        </Carousel>
+      );
+    }
+    ```
+  </Step>
+
+  <Step title="Add responsive styles">
+    ```css ProductCarousel.css
+    .product-card {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    ```
+  </Step>
+</Steps>
+
+## Mobile-First Approach
+
+<Tip>
+  Start with mobile styles and progressively enhance for larger screens:
+</Tip>
+
+```tsx
+function MobileFirstCarousel() {
+  return (
+    <Carousel
+      scrollOffset={300}  // Good for mobile
+      scrollSnapType="center"  // Center snapping works well on mobile
+      duration={400}  // Faster transitions on mobile
+    >
+      {items.map((item) => (
+        <div key={item.id} className="item">
+          {item.content}
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+/* Mobile first: full-width cards */
+.item {
+  width: 90vw;
+  max-width: 300px;
+}
+
+/* Tablet: 2 cards visible */
+@media (min-width: 768px) {
+  .item {
+    width: 45vw;
+    max-width: 350px;
+  }
+}
+
+/* Desktop: 3-4 cards visible */
+@media (min-width: 1024px) {
+  .item {
+    width: 30vw;
+    max-width: 400px;
+  }
+}
+```
+
+## Responsive Scroll Snapping
+
+Different snap behaviors work better on different devices:
+
+```tsx
+import { useState, useEffect } from 'react';
+import { Carousel } from 'react-any-carousal';
+import type { ScrollSnapOptions } from 'react-any-carousal';
+
+function AdaptiveSnapCarousel() {
+  const [snapType, setSnapType] = useState<ScrollSnapOptions>('center');
+
+  useEffect(() => {
+    const updateSnap = () => {
+      // Mobile: center snapping feels more natural
+      if (window.innerWidth < 768) {
+        setSnapType('center');
+      } 
+      // Desktop: start snapping shows more items
+      else {
+        setSnapType('start');
+      }
+    };
+
+    updateSnap();
+    window.addEventListener('resize', updateSnap);
+    return () => window.removeEventListener('resize', updateSnap);
+  }, []);
+
+  return (
+    <Carousel scrollSnapType={snapType} scrollOffset={350}>
+      {items.map((item) => (
+        <div key={item.id}>{item.content}</div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+## CSS Grid Integration
+
+For complex responsive layouts, combine with CSS Grid:
+
+```tsx
+function GridCarousel() {
+  return (
+    <Carousel scrollOffset={600} scrollSnapType="start">
+      {chunks(items, 2).map((chunk, idx) => (
+        <div key={idx} className="grid-slide">
+          {chunk.map((item) => (
+            <div key={item.id} className="grid-item">
+              {item.content}
+            </div>
+          ))}
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+.grid-slide {
+  display: grid;
+  gap: 1rem;
+  width: 600px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid-slide {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+```
+
+## Performance Tips
+
+<Warning>
+  Avoid setting `scrollOffset` to very large values (> 5000px) as it may cause performance issues on lower-end devices.
+</Warning>
+
+1. **Debounce resize events** when updating `scrollOffset`:
+
+```tsx
+import { debounce } from 'lodash';
+
+useEffect(() => {
+  const handleResize = debounce(() => {
+    // Update scrollOffset logic
+  }, 150);
+
+  window.addEventListener('resize', handleResize);
+  return () => {
+    handleResize.cancel();
+    window.removeEventListener('resize', handleResize);
+  };
+}, []);
+```
+
+2. **Use `flex-shrink: 0`** on carousel items to prevent layout shifts:
+
+```css
+.carousel-item {
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+```
+
+3. **Optimize images** with responsive image techniques:
+
+```tsx
+<img
+  src={item.image}
+  srcSet={`${item.image} 1x, ${item.image2x} 2x`}
+  loading="lazy"
+  alt={item.title}
+/>
+```
+
+## Testing Responsive Behavior
+
+Test your carousel across different viewports:
+
+```tsx
+// Use in development to test different breakpoints
+function DebugCarousel() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div>
+      <p>Current width: {width}px</p>
+      <Carousel scrollOffset={width < 640 ? 300 : 1000}>
+        {/* Items */}
+      </Carousel>
+    </div>
+  );
+}
+```

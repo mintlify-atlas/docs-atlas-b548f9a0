@@ -1,0 +1,794 @@
+---
+title: 'Advanced Examples'
+description: 'Complex real-world carousel implementations with multiple features'
+icon: 'rocket'
+---
+
+## Full-Featured Auto-Scrolling Carousel
+
+Combine auto-scroll, custom easing, and styled icons for a production-ready carousel:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+
+function AdvancedCarousel() {
+  const slides = [
+    {
+      id: 1,
+      image: '/slides/hero-1.jpg',
+      title: 'Premium Quality',
+      description: 'Crafted with attention to every detail',
+      cta: 'Shop Now',
+    },
+    {
+      id: 2,
+      image: '/slides/hero-2.jpg',
+      title: 'Fast Delivery',
+      description: 'Get your order within 48 hours',
+      cta: 'Learn More',
+    },
+    {
+      id: 3,
+      image: '/slides/hero-3.jpg',
+      title: 'Eco Friendly',
+      description: 'Sustainable materials, better future',
+      cta: 'Discover',
+    },
+  ];
+
+  const customIcon = (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+      <path d="M7 4l6 6-6 6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  return (
+    <Carousel 
+      autoSlideInterval={5000}
+      duration={800}
+      scrollEasing="cubic-bezier(0.34, 1.56, 0.64, 1)" // Bounce effect
+      scrollSnapType="start"
+      scrollOffset={1200}
+      theme="dark"
+      iconOptions={{
+        icon: customIcon,
+        iconStyles: {
+          color: 'white',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backdropFilter: 'blur(10px)',
+          padding: '1rem',
+          borderRadius: '50%',
+          border: '2px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+          transition: 'all 0.3s ease',
+        },
+      }}
+    >
+      {slides.map((slide) => (
+        <div key={slide.id} className="hero-slide-advanced">
+          <img src={slide.image} alt={slide.title} />
+          <div className="overlay" />
+          <div className="content">
+            <h1>{slide.title}</h1>
+            <p>{slide.description}</p>
+            <button className="cta">{slide.cta}</button>
+          </div>
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+.hero-slide-advanced {
+  min-width: 100%;
+  height: 600px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-slide-advanced img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+  z-index: 1;
+}
+
+.content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  color: white;
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+  padding: 2rem;
+}
+
+.content h1 {
+  margin: 0 0 1rem 0;
+  font-size: 4rem;
+  font-weight: 800;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.8s ease;
+}
+
+.content p {
+  margin: 0 0 2rem 0;
+  font-size: 1.5rem;
+  opacity: 0.95;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.8s ease 0.2s backwards;
+}
+
+.cta {
+  padding: 1.25rem 3rem;
+  background: white;
+  color: #111;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s ease 0.4s backwards;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cta:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-slide-advanced {
+    height: 450px;
+  }
+  
+  .content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .content p {
+    font-size: 1.1rem;
+  }
+}
+```
+
+## Dynamic Product Showcase
+
+Build an e-commerce carousel with filtering and dynamic content:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+import { useState } from 'react';
+
+function ProductShowcase() {
+  const [category, setCategory] = useState('all');
+  
+  const products = [
+    { id: 1, name: 'Wireless Headphones', price: 199, category: 'audio', image: '/products/headphones.jpg' },
+    { id: 2, name: 'Smart Watch', price: 299, category: 'wearables', image: '/products/watch.jpg' },
+    { id: 3, name: 'Laptop Stand', price: 79, category: 'accessories', image: '/products/stand.jpg' },
+    { id: 4, name: 'Bluetooth Speaker', price: 149, category: 'audio', image: '/products/speaker.jpg' },
+    { id: 5, name: 'Phone Case', price: 29, category: 'accessories', image: '/products/case.jpg' },
+  ];
+
+  const filteredProducts = category === 'all' 
+    ? products 
+    : products.filter(p => p.category === category);
+
+  const chevronIcon = (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+
+  return (
+    <div className="product-showcase">
+      <div className="filter-bar">
+        <button 
+          className={category === 'all' ? 'active' : ''}
+          onClick={() => setCategory('all')}
+        >
+          All Products
+        </button>
+        <button 
+          className={category === 'audio' ? 'active' : ''}
+          onClick={() => setCategory('audio')}
+        >
+          Audio
+        </button>
+        <button 
+          className={category === 'wearables' ? 'active' : ''}
+          onClick={() => setCategory('wearables')}
+        >
+          Wearables
+        </button>
+        <button 
+          className={category === 'accessories' ? 'active' : ''}
+          onClick={() => setCategory('accessories')}
+        >
+          Accessories
+        </button>
+      </div>
+
+      <Carousel 
+        key={category} // Reset carousel when category changes
+        scrollSnapType="start"
+        scrollOffset={290}
+        duration={500}
+        scrollEasing="cubic-bezier(0.25, 1, 0.5, 1)"
+        iconOptions={{
+          icon: chevronIcon,
+          iconStyles: {
+            color: '#1f2937',
+            backgroundColor: 'white',
+            padding: '0.875rem',
+            borderRadius: '50%',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+          },
+        }}
+      >
+        {filteredProducts.map((product) => (
+          <div key={product.id} className="product-card-advanced">
+            <div className="product-image">
+              <img src={product.image} alt={product.name} />
+              <span className="category-badge">{product.category}</span>
+            </div>
+            <div className="product-info">
+              <h3>{product.name}</h3>
+              <p className="price">${product.price}</p>
+              <button className="add-to-cart">Add to Cart</button>
+            </div>
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+```
+
+```css
+.product-showcase {
+  padding: 3rem 2rem;
+  background: #f9fafb;
+}
+
+.filter-bar {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filter-bar button {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.filter-bar button:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.filter-bar button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.product-card-advanced {
+  min-width: 270px;
+  margin-right: 20px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.product-card-advanced:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.product-image {
+  position: relative;
+  width: 100%;
+  height: 270px;
+  background: #f9fafb;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 1.5rem;
+}
+
+.category-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.375rem 0.75rem;
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.product-info {
+  padding: 1.25rem;
+}
+
+.product-info h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+  color: #111;
+}
+
+.price {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.add-to-cart {
+  width: 100%;
+  padding: 0.875rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.add-to-cart:hover {
+  background: #2563eb;
+}
+```
+
+## Lazy-Loaded Image Carousel
+
+Optimize performance with lazy loading for large image sets:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+import { useState, useRef, useEffect } from 'react';
+
+function LazyImage({ src, alt }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={imgRef} className="lazy-image-container">
+      {isInView && (
+        <img
+          src={src}
+          alt={alt}
+          onLoad={() => setIsLoaded(true)}
+          className={isLoaded ? 'loaded' : 'loading'}
+        />
+      )}
+      {!isLoaded && <div className="image-placeholder" />}
+    </div>
+  );
+}
+
+function LazyLoadCarousel() {
+  const images = Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    src: `/gallery/image-${i + 1}.jpg`,
+    alt: `Gallery image ${i + 1}`,
+  }));
+
+  return (
+    <Carousel 
+      scrollSnapType="center"
+      scrollOffset={420}
+      duration={600}
+      scrollEasing="cubic-bezier(0.4, 0, 0.2, 1)"
+      theme="dark"
+    >
+      {images.map((image) => (
+        <div key={image.id} className="gallery-item">
+          <LazyImage src={image.src} alt={image.alt} />
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+```css
+.gallery-item {
+  min-width: 400px;
+  height: 300px;
+  margin: 0 10px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.lazy-image-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.lazy-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lazy-image-container img.loaded {
+  opacity: 1;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+```
+
+## Custom Easing Examples
+
+Experiment with different easing functions for unique scroll behaviors:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+import { useState } from 'react';
+
+function EasingShowcase() {
+  const [easing, setEasing] = useState('cubic-bezier(0.25, 1, 0.5, 1)');
+  
+  const easingOptions = [
+    { name: 'Smooth', value: 'cubic-bezier(0.25, 1, 0.5, 1)' },
+    { name: 'Bounce', value: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+    { name: 'Fast Start', value: 'cubic-bezier(0.7, 0, 0.3, 1)' },
+    { name: 'Slow Start', value: 'cubic-bezier(0.1, 0, 0.9, 1)' },
+    { name: 'Elastic', value: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' },
+  ];
+
+  return (
+    <div className="easing-showcase">
+      <h2>Try Different Easing Functions</h2>
+      <div className="easing-controls">
+        {easingOptions.map((option) => (
+          <button
+            key={option.name}
+            className={easing === option.value ? 'active' : ''}
+            onClick={() => setEasing(option.value)}
+          >
+            {option.name}
+          </button>
+        ))}
+      </div>
+
+      <Carousel 
+        key={easing} // Force re-render when easing changes
+        scrollSnapType="center"
+        scrollOffset={350}
+        duration={1000}
+        scrollEasing={easing}
+      >
+        {[1, 2, 3, 4, 5].map((num) => (
+          <div key={num} className="easing-slide">
+            <h3>Slide {num}</h3>
+            <p>Current easing: {easingOptions.find(e => e.value === easing)?.name}</p>
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+```
+
+```css
+.easing-showcase {
+  padding: 3rem 2rem;
+  background: white;
+}
+
+.easing-showcase h2 {
+  text-align: center;
+  margin: 0 0 2rem 0;
+  color: #111;
+}
+
+.easing-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.easing-controls button {
+  padding: 0.625rem 1.25rem;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #374151;
+}
+
+.easing-controls button:hover {
+  background: #e5e7eb;
+}
+
+.easing-controls button.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.easing-slide {
+  min-width: 330px;
+  height: 300px;
+  margin: 0 10px;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.easing-slide h3 {
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+}
+
+.easing-slide p {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+```
+
+## Performance Optimization Tips
+
+<AccordionGroup>
+  <Accordion title="Large Datasets">
+    When working with many items:
+    - Implement lazy loading for images and heavy content
+    - Use virtualization for extremely large lists (100+ items)
+    - Consider pagination instead of loading everything
+    - Debounce rapid scroll events if adding custom handlers
+  </Accordion>
+
+  <Accordion title="Animation Performance">
+    Optimize smooth scrolling:
+    - Keep `duration` between 400-800ms for best performance
+    - Avoid heavy computations during scroll animations
+    - Use CSS transforms for item animations (GPU accelerated)
+    - Test on lower-end devices to ensure smooth performance
+  </Accordion>
+
+  <Accordion title="Memory Management">
+    Prevent memory leaks:
+    - Clean up event listeners in useEffect
+    - Avoid storing large objects in carousel item state
+    - Use React.memo for expensive child components
+    - Unmount carousels when not visible (tabs, modals)
+  </Accordion>
+
+  <Accordion title="Image Optimization">
+    Best practices for images:
+    - Serve responsive images with srcset
+    - Use modern formats (WebP, AVIF) with fallbacks
+    - Implement progressive loading (blur-up technique)
+    - Compress images appropriately (aim for under 200KB each)
+  </Accordion>
+</AccordionGroup>
+
+## Error Handling
+
+Handle edge cases gracefully:
+
+```jsx
+import { Carousel } from 'react-any-carousal';
+import { useState, useEffect } from 'react';
+
+function RobustCarousel() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchCarouselItems()
+      .then(data => {
+        setItems(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <div className="carousel-loading">Loading amazing content...</div>;
+  }
+
+  if (error) {
+    return <div className="carousel-error">Failed to load content: {error}</div>;
+  }
+
+  if (items.length === 0) {
+    return <div className="carousel-empty">No items to display</div>;
+  }
+
+  return (
+    <Carousel 
+      scrollSnapType="center"
+      scrollOffset={420}
+      duration={600}
+    >
+      {items.map((item) => (
+        <div key={item.id} className="carousel-item">
+          {item.content}
+        </div>
+      ))}
+    </Carousel>
+  );
+}
+
+// Mock fetch function
+function fetchCarouselItems() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        { id: 1, content: 'Item 1' },
+        { id: 2, content: 'Item 2' },
+        { id: 3, content: 'Item 3' },
+      ]);
+    }, 1000);
+  });
+}
+```
+
+```css
+.carousel-loading,
+.carousel-error,
+.carousel-empty {
+  padding: 4rem 2rem;
+  text-align: center;
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
+.carousel-error {
+  color: #dc2626;
+}
+
+.carousel-item {
+  min-width: 400px;
+  height: 300px;
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+```
+
+<Warning>
+  Always validate that your carousel has content before rendering to avoid layout issues.
+</Warning>
+
+## Common Easing Functions Reference
+
+```jsx
+// Smooth and natural
+scrollEasing="cubic-bezier(0.25, 1, 0.5, 1)"
+
+// Bounce effect
+scrollEasing="cubic-bezier(0.34, 1.56, 0.64, 1)"
+
+// Fast start, slow end
+scrollEasing="cubic-bezier(0.7, 0, 0.3, 1)"
+
+// Slow start, fast end
+scrollEasing="cubic-bezier(0.1, 0, 0.9, 1)"
+
+// Elastic overshoot
+scrollEasing="cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+
+// Linear (constant speed)
+scrollEasing="cubic-bezier(0, 0, 1, 1)"
+
+// Ease in-out (default browser)
+scrollEasing="cubic-bezier(0.42, 0, 0.58, 1)"
+```
+
+<Tip>
+  Visit [cubic-bezier.com](https://cubic-bezier.com) to visualize and create custom easing functions.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api/carousel">
+    Complete API documentation for all props
+  </Card>
+  <Card title="Accessibility Guide" icon="universal-access" href="/guides/accessibility">
+    Learn about making your carousel accessible
+  </Card>
+</CardGroup>

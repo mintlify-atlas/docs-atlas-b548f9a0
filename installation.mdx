@@ -1,0 +1,216 @@
+---
+title: Installation
+description: Install and set up react-any-carousel in your project
+---
+
+## Package Installation
+
+Install `react-any-carousel` using your preferred package manager:
+
+<CodeGroup>
+
+```bash npm
+npm install react-any-carousel
+```
+
+```bash yarn
+yarn add react-any-carousel
+```
+
+```bash pnpm
+pnpm add react-any-carousel
+```
+
+</CodeGroup>
+
+## Requirements
+
+### Peer Dependencies
+
+The library requires React 19 or higher:
+
+```json
+{
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
+```
+
+<Note>
+  If you're using an earlier version of React (16.8+), the carousel may still work but is not officially tested or supported.
+</Note>
+
+### Internal Dependencies
+
+The carousel uses `bezier-easing` for smooth scroll animations. This is automatically installed as a dependency and requires no additional configuration.
+
+## TypeScript Support
+
+The library is written in TypeScript and includes full type definitions out of the box. No additional `@types` packages are needed.
+
+```tsx
+import { Carousel, CarouselProps, Theme, ScrollSnapOptions } from "react-any-carousel";
+
+// Full TypeScript support with autocomplete
+const MyCarousel = (props: CarouselProps) => {
+  return <Carousel {...props} />;
+};
+```
+
+### Available Type Exports
+
+The following types are exported for your use:
+
+- `CarouselProps` - Main component props interface
+- `Theme` - `"light" | "dark"`
+- `ScrollSnapOptions` - `"start" | "center" | "end" | "none"`
+- `IconOptions` - Configuration for custom navigation icons
+
+## Framework Compatibility
+
+### Next.js
+
+The Carousel component uses the `"use client"` directive and is fully compatible with Next.js App Router:
+
+```tsx
+// app/components/MyCarousel.tsx
+"use client";
+
+import { Carousel } from "react-any-carousel";
+
+export default function MyCarousel() {
+  return (
+    <Carousel>
+      <div>Slide 1</div>
+      <div>Slide 2</div>
+    </Carousel>
+  );
+}
+```
+
+<Tip>
+  The component is already marked as a Client Component, so you don't need to add `"use client"` when importing it.
+</Tip>
+
+### Vite
+
+Works out of the box with Vite and React:
+
+```tsx
+import { Carousel } from "react-any-carousel";
+
+function App() {
+  return <Carousel>{/* your content */}</Carousel>;
+}
+```
+
+### Create React App
+
+Fully compatible with CRA:
+
+```tsx
+import { Carousel } from "react-any-carousel";
+import "./App.css";
+
+function App() {
+  return (
+    <div className="App">
+      <Carousel>{/* your content */}</Carousel>
+    </div>
+  );
+}
+```
+
+## Styling
+
+The carousel includes built-in CSS that is automatically imported. The styles include:
+
+- Smooth horizontal scrolling container
+- Hidden scrollbars for a clean look
+- Responsive navigation buttons with shadows
+- Support for scroll-snap alignment
+
+<Note>
+  You don't need to manually import any CSS files. All necessary styles are bundled with the component.
+</Note>
+
+### Custom Styling
+
+You can override the default styles by targeting the carousel's class names:
+
+```css
+/* Target the wrapper */
+.carousel-wrapper {
+  /* your custom styles */
+}
+
+/* Target the scrolling container */
+.carousel-container {
+  gap: 2rem; /* increase gap between items */
+  padding-inline: 2rem; /* adjust side padding */
+}
+
+/* Target navigation buttons */
+.nav-button {
+  /* customize button positioning or appearance */
+}
+```
+
+## Verify Installation
+
+Create a simple test component to verify everything is working:
+
+```tsx
+import { Carousel } from "react-any-carousel";
+
+function Test() {
+  return (
+    <Carousel>
+      <div style={{ width: "300px", height: "200px", background: "#f0f0f0" }}>
+        Slide 1
+      </div>
+      <div style={{ width: "300px", height: "200px", background: "#e0e0e0" }}>
+        Slide 2
+      </div>
+      <div style={{ width: "300px", height: "200px", background: "#d0d0d0" }}>
+        Slide 3
+      </div>
+    </Carousel>
+  );
+}
+```
+
+If you see a horizontal carousel with navigation buttons, you're all set!
+
+## Troubleshooting
+
+<Warning>
+  If you encounter a "Cannot find module" error, ensure your package manager has completed the installation and try restarting your development server.
+</Warning>
+
+### Common Issues
+
+**Module not found**
+- Clear your `node_modules` and reinstall: `rm -rf node_modules && npm install`
+- Check that the package is in your `package.json` dependencies
+
+**TypeScript errors**
+- Ensure you're using TypeScript 5.0 or higher
+- The library provides its own type definitions, so no `@types` package is needed
+
+**Styles not applying**
+- The CSS is automatically imported with the component
+- If using CSS modules or a CSS-in-JS solution, ensure global styles are not being blocked
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+    Build your first carousel in under 5 minutes
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/carousel">
+    Explore all available props and options
+  </Card>
+</CardGroup>

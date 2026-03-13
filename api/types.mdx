@@ -1,0 +1,197 @@
+---
+title: TypeScript Types
+description: Type definitions exported by react-any-carousal
+---
+
+## Overview
+
+The library exports several TypeScript types to help you build type-safe carousel implementations.
+
+## Importing Types
+
+```typescript
+import { ScrollSnapOptions, Theme, IconOptions, CarouselProps } from 'react-any-carousal';
+```
+
+## ScrollSnapOptions
+
+Defines the scroll snapping behavior for the carousel.
+
+```typescript
+export type ScrollSnapOptions = "start" | "center" | "end" | "none";
+```
+
+### Values
+
+- `"start"` - Snaps to the start of each child element
+- `"center"` - Snaps to the center of each child element
+- `"end"` - Snaps to the end of each child element
+- `"none"` - Disables scroll snapping
+
+### Usage
+
+```tsx
+import { Carousel, ScrollSnapOptions } from 'react-any-carousal';
+
+function MyCarousel() {
+  const snapType: ScrollSnapOptions = "center";
+  
+  return (
+    <Carousel scrollSnapType={snapType}>
+      {/* children */}
+    </Carousel>
+  );
+}
+```
+
+### Learn More
+
+For more information about scroll snapping, see the [MDN documentation on scroll-snap-type](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type).
+
+## Theme
+
+Defines the visual theme for the carousel, affecting icon colors and styling.
+
+```typescript
+export type Theme = "light" | "dark";
+```
+
+### Values
+
+- `"light"` - Light theme (default)
+- `"dark"` - Dark theme
+
+### Usage
+
+```tsx
+import { Carousel, Theme } from 'react-any-carousal';
+
+function MyCarousel() {
+  const theme: Theme = "dark";
+  
+  return (
+    <Carousel theme={theme}>
+      {/* children */}
+    </Carousel>
+  );
+}
+```
+
+## IconOptions
+
+Options for customizing the navigation icons used in the carousel.
+
+```typescript
+export type IconOptions = {
+  icon?: ReactNode;
+  iconStyles?: any;
+};
+```
+
+### Properties
+
+<ResponseField name="icon" type="ReactNode">
+  A `ReactNode` that will be used as the icon element for navigation buttons.
+  
+  This can be any valid React element: a string, SVG, component, etc.
+</ResponseField>
+
+<ResponseField name="iconStyles" type="any">
+  A style object that will be passed as styles to the Icon Node.
+  
+  This accepts standard React CSS properties as an object.
+</ResponseField>
+
+### Default Value
+
+```typescript
+{
+  icon: <span>&#8249;</span>,
+  iconStyles: { color: "whitesmoke", backgroundColor: "#333" }
+}
+```
+
+### Usage Examples
+
+**Custom text icon:**
+```tsx
+import { Carousel, IconOptions } from 'react-any-carousal';
+
+function MyCarousel() {
+  const icons: IconOptions = {
+    icon: <span>→</span>,
+    iconStyles: { color: 'blue', fontSize: '24px' }
+  };
+  
+  return (
+    <Carousel iconOptions={icons}>
+      {/* children */}
+    </Carousel>
+  );
+}
+```
+
+**Custom SVG icon:**
+```tsx
+import { Carousel, IconOptions } from 'react-any-carousal';
+
+function MyCarousel() {
+  const icons: IconOptions = {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    ),
+    iconStyles: { backgroundColor: 'transparent' }
+  };
+  
+  return (
+    <Carousel iconOptions={icons}>
+      {/* children */}
+    </Carousel>
+  );
+}
+```
+
+**Using an icon library:**
+```tsx
+import { Carousel, IconOptions } from 'react-any-carousal';
+import { ChevronLeft } from 'lucide-react';
+
+function MyCarousel() {
+  const icons: IconOptions = {
+    icon: <ChevronLeft />,
+    iconStyles: { color: 'white', backgroundColor: 'rgba(0,0,0,0.5)' }
+  };
+  
+  return (
+    <Carousel iconOptions={icons}>
+      {/* children */}
+    </Carousel>
+  );
+}
+```
+
+## CarouselProps
+
+For complete documentation of the `CarouselProps` interface, see the [Carousel Props](/api/carousel-props) reference.
+
+```typescript
+import { ReactNode } from "react";
+
+export type CarouselProps = {
+  children: ReactNode;
+  theme?: Theme;
+  iconOptions?: IconOptions;
+  scrollSnapType?: ScrollSnapOptions;
+  scrollOffset?: number;
+  autoSlideInterval?: number;
+  scrollEasing?: string;
+  duration?: number;
+};
+```
+
+## See Also
+
+- [Carousel Component](/api/carousel) - Main component documentation
+- [Carousel Props](/api/carousel-props) - Detailed props reference
